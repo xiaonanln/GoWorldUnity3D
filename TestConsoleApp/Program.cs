@@ -12,11 +12,11 @@ namespace TestConsoleApp
     {
         static void Main(string[] args)
         {
-            GoWorldUnity3D.GameClient client = new GoWorldUnity3D.GameClient("ec2-13-229-128-242.ap-southeast-1.compute.amazonaws.com", 15011);
-            Console.WriteLine(client.ToString() + " created.");
+            GameClient.Instance.Connect("ec2-13-229-128-242.ap-southeast-1.compute.amazonaws.com", 15011);
+            Console.WriteLine(GameClient.Instance + " created.");
 
             while (true) {
-                client.Tick();
+                GameClient.Instance.Tick();
                 Thread.Sleep(100);
             }
 
