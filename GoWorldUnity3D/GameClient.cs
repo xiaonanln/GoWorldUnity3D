@@ -12,6 +12,7 @@ namespace GoWorldUnity3D
         public static GameClient Instance = new GameClient();
         private TcpClient tcpClient;
         private DateTime startConnectTime = DateTime.MinValue;
+        private PacketReceiver packetReceiver;
 
         public string Host { get; private set; }
         public int Port { get; private set; }
@@ -45,6 +46,7 @@ namespace GoWorldUnity3D
             {
                 this.tcpClient.Close();
                 this.tcpClient = null;
+                this.packetReceiver = null;
                 this.startConnectTime = DateTime.MinValue;
                 this.debug("Disconnected");
             }
@@ -64,25 +66,41 @@ namespace GoWorldUnity3D
             else
             {
                 this.assureTCPClientConnected();
-                this.tryRecvNextPacket();
+                if (this.tcpClient != null && this.tcpClient.Connected && this.tcpClient.Available > 0)
+                {
+                    this.tryRecvNextPacket();
+                }
             }
         }
 
         private void tryRecvNextPacket()
         {
-            if (this.tcpClient.Available == 0)
-            {
-                return; 
-            }
-
             this.debug("Available: " + this.tcpClient.Available);
+            Packet pkt =  this.packetReceiver.RecvPacket();
+            if (pkt != null)
+            {
+                this.debug("Packet Received: " + pkt);
+                this.handlePacket(pkt);
+            }
+        }
+
+        private void handlePacket(Packet pkt)
+        {
+            switch (pkt.MsgType)
+            {
+                case Consts.MT_CREATE_ENTITY_ON_CLIENT:
+                    break;
+            }
         }
 
         private void assureTCPClientConnected()
         {
             if (this.tcpClient != null)
             {
-                this.checkConnectTimeout();
+                if (!this.tcpClient.Connected)
+                {
+                    this.checkConnectTimeout();
+                }
                 return;
             }
 
@@ -90,21 +108,17 @@ namespace GoWorldUnity3D
             this.debug("Connecting ...");
             this.tcpClient = new TcpClient();
             this.tcpClient.NoDelay = true;
+            this.tcpClient.Client.Blocking = false;
             this.tcpClient.SendTimeout = 5000;
-            this.tcpClient.ReceiveBufferSize = 8192;
+            this.tcpClient.ReceiveBufferSize = Consts.MAX_PAYLOAD_LEN + Consts.SIZE_FIELD_SIZE;
             this.startConnectTime = DateTime.Now;
+            this.packetReceiver = new PacketReceiver(this.tcpClient);
             this.tcpClient.BeginConnect(this.Host, this.Port, this.onConnected, null);
-            
         }
 
         private void checkConnectTimeout()
         {
             Debug.Assert(this.tcpClient != null);
-            if (this.tcpClient.Connected)
-            {
-                return;
-            }
-
             if (DateTime.Now - this.startConnectTime > TimeSpan.FromSeconds(5))
             {
                 this.disconnectTCPClient();
