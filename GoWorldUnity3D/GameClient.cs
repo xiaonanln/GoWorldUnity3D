@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Diagnostics;
+using System.Collections;
 
-namespace GoWorldUnity3D
+namespace GoWorld
 {
     public class GameClient
     {
@@ -52,9 +53,9 @@ namespace GoWorldUnity3D
             }
         }
 
-        private void debug(string msg)
+        private void debug(string msg, params object[] args)
         {
-            Console.WriteLine(this + " - " + msg);
+            Console.WriteLine(String.Format("DEBUG - " + msg, args));
         }
 
         public void Tick()
@@ -86,11 +87,37 @@ namespace GoWorldUnity3D
 
         private void handlePacket(Packet pkt)
         {
-            switch (pkt.MsgType)
+            UInt16 msgtype = pkt.MsgType;
+            if (msgtype != Proto.MT_CALL_FILTERED_CLIENTS && msgtype != Proto.MT_SYNC_POSITION_YAW_ON_CLIENTS)
             {
-                case Consts.MT_CREATE_ENTITY_ON_CLIENT:
+                UInt16 gateid = pkt.ReadUInt16();
+                string clientid = pkt.ReadStr(Proto.CLIENTID_LENGTH);
+                this.debug("Gate ID = " + gateid + ", Client ID = " + clientid + " Ignored");
+            }
+
+            switch (msgtype)
+            {
+                case Proto.MT_SYNC_POSITION_YAW_ON_CLIENTS:
+                    break;
+                case Proto.MT_CREATE_ENTITY_ON_CLIENT:
+                    this.handleCreateEntityOnClient(pkt);
                     break;
             }
+        }
+
+        private void handleCreateEntityOnClient(Packet pkt)
+        {
+            bool isPlayer = pkt.ReadBool();
+            string entityID = pkt.ReadEntityID();
+            string typeName = pkt.ReadVarStr();
+            float x = pkt.ReadFloat32();
+            float y = pkt.ReadFloat32();
+            float z = pkt.ReadFloat32();
+            float yaw = pkt.ReadFloat32();
+            Hashtable attrs = pkt.ReadData() as Hashtable;
+            this.debug ("Handle Create Entity On Client: isPlayer = {0}, entityID = {1}, typeName = {2}, position = {3},{4},{5}, yaw = {6}, attrs = {7}", isPlayer, entityID, typeName, x,y,z, yaw, attrs);
+            
+            //manager.OnCreateEntity(typeName, entityID, isPlayer, x, y, z, yaw, clientAttrs);
         }
 
         private void assureTCPClientConnected()
@@ -110,7 +137,7 @@ namespace GoWorldUnity3D
             this.tcpClient.NoDelay = true;
             this.tcpClient.Client.Blocking = false;
             this.tcpClient.SendTimeout = 5000;
-            this.tcpClient.ReceiveBufferSize = Consts.MAX_PAYLOAD_LEN + Consts.SIZE_FIELD_SIZE;
+            this.tcpClient.ReceiveBufferSize = Proto.MAX_PAYLOAD_LEN + Proto.SIZE_FIELD_SIZE;
             this.startConnectTime = DateTime.Now;
             this.packetReceiver = new PacketReceiver(this.tcpClient);
             this.tcpClient.BeginConnect(this.Host, this.Port, this.onConnected, null);

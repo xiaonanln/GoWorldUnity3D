@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
-namespace GoWorldUnity3D
+namespace GoWorld
 {
     class PacketReceiver
     {
@@ -26,7 +26,7 @@ namespace GoWorldUnity3D
         {
             this.tcpClient = tcpClient;
             //this.netStream = tcpClient.GetStream();
-            this.recvPayloadLenBuff = new byte[Consts.SIZE_FIELD_SIZE];
+            this.recvPayloadLenBuff = new byte[Proto.SIZE_FIELD_SIZE];
         }
 
         internal Packet RecvPacket() 
@@ -38,16 +38,16 @@ namespace GoWorldUnity3D
             int nr;
             if (this.recvState == RecvState.receivingPayloadLen)
             {
-                if (tcpClient.Available < Consts.SIZE_FIELD_SIZE)
+                if (tcpClient.Available < Proto.SIZE_FIELD_SIZE)
                 {
                     return null;
                 }
 
                 nr = tcpClient.Client.Receive(this.recvPayloadLenBuff);
-                Debug.Assert(nr == Consts.SIZE_FIELD_SIZE);
+                Debug.Assert(nr == Proto.SIZE_FIELD_SIZE);
                 
                 this.recvPayloadLen = BitConverter.ToUInt32(recvPayloadLenBuff, 0);
-                if (this.recvPayloadLen < 2 || this.recvPayloadLen > Consts.MAX_PAYLOAD_LEN)
+                if (this.recvPayloadLen < 2 || this.recvPayloadLen > Proto.MAX_PAYLOAD_LEN)
                 {
                     Console.WriteLine("Invalid Packet Payload Length: " + this.recvPayloadLen);
                     this.tcpClient.Close();

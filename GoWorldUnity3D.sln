@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoWorldUnity3D", "GoWorldUn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsoleApp", "TestConsoleApp\TestConsoleApp.csproj", "{1C911882-6503-475A-A193-5DA4919B9651}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "C:\Users\Administrator\Desktop\goworld-unity-demo\Assembly-CSharp.csproj", "{C73EC8E0-9D67-E7E7-79A1-DC7947AC7598}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1C911882-6503-475A-A193-5DA4919B9651}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C911882-6503-475A-A193-5DA4919B9651}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C911882-6503-475A-A193-5DA4919B9651}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C73EC8E0-9D67-E7E7-79A1-DC7947AC7598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C73EC8E0-9D67-E7E7-79A1-DC7947AC7598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C73EC8E0-9D67-E7E7-79A1-DC7947AC7598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C73EC8E0-9D67-E7E7-79A1-DC7947AC7598}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

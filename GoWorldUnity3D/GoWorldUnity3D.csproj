@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MsgPack, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\MsgPack.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,10 +46,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Consts.cs" />
+    <Compile Include="DataPacker.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proto.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lib\MsgPack.dll" />
+    <Content Include="lib\MsgPack.pdb" />
+    <Content Include="lib\MsgPack.XML" />
+    <Content Include="MsgPack.dll" />
+    <Content Include="MsgPack.pdb" />
+    <Content Include="MsgPack.XML" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
