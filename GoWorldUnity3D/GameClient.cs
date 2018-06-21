@@ -61,8 +61,18 @@ namespace GoWorldUnity3D
             else
             {
                 this.assureTCPClientConnected();
-                this.debug("Available: " + this.tcpClient.Available);
+                this.tryRecvNextPacket();
             }
+        }
+
+        private void tryRecvNextPacket()
+        {
+            if (this.tcpClient.Available == 0)
+            {
+                return; 
+            }
+
+            this.debug("Available: " + this.tcpClient.Available);
         }
 
         private void assureTCPClientConnected()
@@ -75,6 +85,8 @@ namespace GoWorldUnity3D
             this.debug("Connecting ...");
             this.tcpClient = new TcpClient();
             this.tcpClient.NoDelay = true;
+            this.tcpClient.SendTimeout = 5000;
+            this.tcpClient.ReceiveBufferSize = 8192;
             this.tcpClient.BeginConnect(this.Host, this.Port, this.onConnected, null);
         }
 
