@@ -1,2 +1,2 @@
 # GoWorldUnity3D
-goworld library (dll) for unity3d
+Unity3D Game Client Library (DLL) for GoWorld - developping ...
