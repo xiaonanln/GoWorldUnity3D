@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace GoWorldUnity3D
 {
@@ -10,6 +11,7 @@ namespace GoWorldUnity3D
     {
         public static GameClient Instance = new GameClient();
         private TcpClient tcpClient;
+        private DateTime startConnectTime = DateTime.MinValue;
 
         public string Host { get; private set; }
         public int Port { get; private set; }
@@ -43,6 +45,7 @@ namespace GoWorldUnity3D
             {
                 this.tcpClient.Close();
                 this.tcpClient = null;
+                this.startConnectTime = DateTime.MinValue;
                 this.debug("Disconnected");
             }
         }
@@ -79,15 +82,33 @@ namespace GoWorldUnity3D
         {
             if (this.tcpClient != null)
             {
+                this.checkConnectTimeout();
                 return;
             }
 
+            // no tcpClient == not connecting, start new connection ...
             this.debug("Connecting ...");
             this.tcpClient = new TcpClient();
             this.tcpClient.NoDelay = true;
             this.tcpClient.SendTimeout = 5000;
             this.tcpClient.ReceiveBufferSize = 8192;
+            this.startConnectTime = DateTime.Now;
             this.tcpClient.BeginConnect(this.Host, this.Port, this.onConnected, null);
+            
+        }
+
+        private void checkConnectTimeout()
+        {
+            Debug.Assert(this.tcpClient != null);
+            if (this.tcpClient.Connected)
+            {
+                return;
+            }
+
+            if (DateTime.Now - this.startConnectTime > TimeSpan.FromSeconds(5))
+            {
+                this.disconnectTCPClient();
+            }
         }
 
         private void onConnected(IAsyncResult ar)
