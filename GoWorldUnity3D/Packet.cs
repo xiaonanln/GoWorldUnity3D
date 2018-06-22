@@ -8,7 +8,8 @@ namespace GoWorld
 {
     class Packet
     {
-        private byte[] payload;
+        const int INITIAL_PAYLOAD_LEN = 512;
+        internal byte[] payload;
         public UInt16 MsgType { get; private set; }
         public int UnreadPayloadLen {
             get {
@@ -16,7 +17,15 @@ namespace GoWorld
             }
         }
 
-        private int readPos, writePos;
+        public int UnwrittenPayloadLen
+        {
+            get
+            {
+                return this.payload.Length - this.writePos;
+            }
+        }
+
+        internal int readPos, writePos;
 
         public Packet(byte[] payload)
         {
@@ -27,8 +36,9 @@ namespace GoWorld
 
         public Packet(UInt16 msgtype)
         {
+            this.payload = new byte[INITIAL_PAYLOAD_LEN];
             byte[] b =  BitConverter.GetBytes(msgtype);
-            this.payload = b;
+            System.Array.Copy(b, payload, b.Length);
             this.writePos = 2;
         }
 
@@ -53,6 +63,16 @@ namespace GoWorld
             return res;
         }
 
+        internal void AppendUInt16(UInt16 v)
+        {
+            this.AppendBytes(BitConverter.GetBytes(v));
+        }
+
+        internal void AppendUInt32(UInt32 v)
+        {
+            this.AppendBytes(BitConverter.GetBytes(v));
+        }
+
         internal float ReadFloat32()
         {
             this.assureUnreadPayloadLen(sizeof(float));
@@ -70,19 +90,53 @@ namespace GoWorld
             return bytes; 
         }
 
-        private void AppendBytes(byte[] v)
+        private void AppendBytes(byte[] b)
         {
-            throw new NotImplementedException();
+            this.assureUnwrittenPayloadLen(b.Length);
+            System.Array.Copy(b, 0, this.payload, this.writePos, b.Length);
+            this.writePos += b.Length;
         }
 
-        internal void AppendVarStr(string method)
+        private void assureUnwrittenPayloadLen(int len)
         {
-            throw new NotImplementedException();
+            if (this.UnwrittenPayloadLen < len)
+            {
+                int nextPayloadLen = this.payload.Length * 2;
+                while(nextPayloadLen - this.writePos < len)
+                {
+                    nextPayloadLen *= 2;
+                }
+                byte[] newPayload = new byte[nextPayloadLen];
+                Array.Copy(this.payload, newPayload, this.payload.Length);
+                this.payload = newPayload;
+
+                Debug.Assert(this.UnwrittenPayloadLen >= len);
+            }
+        }
+
+        internal void AppendVarBytes(byte[] b)
+        {
+            this.AppendUInt32((UInt32)(b.Length));
+            this.AppendBytes(b);
+        }
+
+        internal void AppendVarStr(string s)
+        {
+            this.AppendVarBytes(ASCIIEncoding.ASCII.GetBytes(s));
+        }
+
+        internal object[] ReadArgs()
+        {
+            return null;
         }
 
         internal void AppendArgs(object[] args)
         {
-            throw new NotImplementedException();
+            this.AppendUInt16((UInt16)args.Length);
+            foreach (object arg in args)
+            {
+                this.AppendData(arg);
+            }
         }
 
         internal string ReadStr(int len)
@@ -141,6 +195,12 @@ namespace GoWorld
         {
             byte[] b = this.ReadVarBytes();
             return DataPacker.UnpackData(b);
+        }
+
+        internal void AppendData(object data)
+        {
+            byte[] b = DataPacker.PackData(data);
+            this.AppendVarBytes(b);
         }
     }
 }

@@ -68,7 +68,25 @@ namespace GoWorld
 
         private void sendPacket(Packet pkt)
         {
-            throw new NotImplementedException();
+            if (this.tcpClient == null)
+            {
+                Logger.Warn("GameClient", "Game Client Is Not Connected, Send Packet Failed: " + pkt);
+            }
+
+            Debug.Assert(pkt.writePos >= sizeof(UInt16));
+            this.sendAll(BitConverter.GetBytes((UInt32)pkt.writePos), sizeof(UInt32));
+            this.sendAll(pkt.payload, pkt.writePos);
+        }
+
+        private void sendAll(byte[] b, int len)
+        {
+            // todo: send async
+            int sent = 0;
+            while (sent < len)
+            {
+                int n = this.tcpClient.Client.Send(b, sent, len-sent, SocketFlags.None);
+                sent += n;
+            }
         }
 
         private void debug(string msg, params object[] args)
@@ -120,6 +138,9 @@ namespace GoWorld
                 case Proto.MT_CREATE_ENTITY_ON_CLIENT:
                     this.handleCreateEntityOnClient(pkt);
                     break;
+                case Proto.MT_CALL_ENTITY_METHOD_ON_CLIENT:
+                    this.handleCallEntityMethodOnClient(pkt);
+                    break; 
             }
         }
 
@@ -138,6 +159,15 @@ namespace GoWorld
             {
                 this.OnCreateEntityOnClient(typeName, entityID, isPlayer, x, y, z, yaw, attrs);
             }
+        }
+
+        private void handleCallEntityMethodOnClient(Packet pkt)
+        {
+            string entityID = pkt.ReadEntityID();
+            string method = pkt.ReadVarStr();
+            object[] args = pkt.ReadArgs();
+            Logger.Info("GameClient", "Handle Call Entity Method On Client: {0}.{1}({2})", entityID, method, args);
+            //manager.OnCallEntityMethod(entityID, method, args);
         }
 
         private void assureTCPClientConnected()
