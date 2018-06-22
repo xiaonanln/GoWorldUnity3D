@@ -10,15 +10,19 @@ namespace GoWorld
 {
     public class GameClient
     {
-        public static GameClient Instance = new GameClient();
+        internal static GameClient Instance = new GameClient();
+
         private TcpClient tcpClient;
         private DateTime startConnectTime = DateTime.MinValue;
         private PacketReceiver packetReceiver;
 
+        internal delegate void OnCreateEntityOnClientHandler();
+        internal OnCreateEntityOnClientHandler OnCreateEntityOnClient;
+
         public string Host { get; private set; }
         public int Port { get; private set; }
 
-        public GameClient()
+        internal GameClient()
         {
         }
 
@@ -27,14 +31,14 @@ namespace GoWorld
             return "GameClient<" + this.Host + ":" + this.Port + ">";
         }
 
-        public void Connect(string host, int port)
+        internal void Connect(string host, int port)
         {
             this.Host = host;
             this.Port = port;
             this.disconnectTCPClient();
         }
 
-        public void Disconnect()
+        internal void Disconnect()
         {
             this.Host = "";
             this.Port = 0;
@@ -55,10 +59,10 @@ namespace GoWorld
 
         private void debug(string msg, params object[] args)
         {
-            Console.WriteLine(String.Format("DEBUG - " + msg, args));
+            Console.WriteLine(String.Format("DEBUG - GameClient - " + msg, args));
         }
 
-        public void Tick()
+        internal void Tick()
         {
             if (this.Host == "")
             {
@@ -116,8 +120,8 @@ namespace GoWorld
             float yaw = pkt.ReadFloat32();
             Hashtable attrs = pkt.ReadData() as Hashtable;
             this.debug ("Handle Create Entity On Client: isPlayer = {0}, entityID = {1}, typeName = {2}, position = {3},{4},{5}, yaw = {6}, attrs = {7}", isPlayer, entityID, typeName, x,y,z, yaw, attrs);
-            
             //manager.OnCreateEntity(typeName, entityID, isPlayer, x, y, z, yaw, clientAttrs);
+            this.OnCreateEntityOnClient();
         }
 
         private void assureTCPClientConnected()

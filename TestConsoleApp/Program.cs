@@ -12,12 +12,11 @@ namespace TestConsoleApp
     {
         static void Main(string[] args)
         {
-
-            GameClient.Instance.Connect("ec2-13-229-128-242.ap-southeast-1.compute.amazonaws.com", 15011);
-            Console.WriteLine(GameClient.Instance + " created.");
+            GoWorld.GoWorld.Connect("ec2-13-229-128-242.ap-southeast-1.compute.amazonaws.com", 15011);
+            Console.WriteLine(GoWorld.GoWorld.GameClient + " created.");
 
             while (true) {
-                GameClient.Instance.Tick();
+                GoWorld.GoWorld.Tick();
                 Thread.Sleep(100);
             }
 

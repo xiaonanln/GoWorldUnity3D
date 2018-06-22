@@ -7,7 +7,7 @@
     <ProjectGuid>{B465ED15-02E7-4CEC-8574-D9A05DA8DA87}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GoWorldUnity3D</RootNamespace>
+    <RootNamespace>GoWorld</RootNamespace>
     <AssemblyName>GoWorldUnity3D</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Consts.cs" />
     <Compile Include="DataPacker.cs" />
+    <Compile Include="EntityManager.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GoWorld.cs" />
     <Compile Include="Packet.cs" />
