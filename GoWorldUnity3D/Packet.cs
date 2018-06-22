@@ -127,7 +127,13 @@ namespace GoWorld
 
         internal object[] ReadArgs()
         {
-            return null;
+            int nargs = this.ReadUInt16();
+            object[] args = new object[nargs];
+            for (int i = 0; i < nargs; i++)
+            {
+                args[i] = this.ReadData();
+            }
+            return args; 
         }
 
         internal void AppendArgs(object[] args)

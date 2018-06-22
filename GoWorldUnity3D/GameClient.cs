@@ -16,8 +16,10 @@ namespace GoWorld
         private DateTime startConnectTime = DateTime.MinValue;
         private PacketReceiver packetReceiver;
 
-        internal delegate void OnCreateEntityOnClientHandler(string typeName, string entityID, bool isPlayer, float x, float y, float z, float yaw, Hashtable attrs);
+        internal delegate void OnCreateEntityOnClientHandler(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, Hashtable attrs);
+        internal delegate void OnCallEntityMethodOnClientHandler(string entityID, string method, object[] args);
         internal OnCreateEntityOnClientHandler OnCreateEntityOnClient;
+        internal OnCallEntityMethodOnClientHandler OnCallEntityMethodOnClient;
 
         public string Host { get; private set; }
         public int Port { get; private set; }
@@ -133,20 +135,31 @@ namespace GoWorld
 
             switch (msgtype)
             {
-                case Proto.MT_SYNC_POSITION_YAW_ON_CLIENTS:
-                    break;
                 case Proto.MT_CREATE_ENTITY_ON_CLIENT:
                     this.handleCreateEntityOnClient(pkt);
                     break;
                 case Proto.MT_CALL_ENTITY_METHOD_ON_CLIENT:
                     this.handleCallEntityMethodOnClient(pkt);
+                    break;
+                case Proto.MT_DESTROY_ENTITY_ON_CLIENT:
+                    this.handleDestroyEntityOnClient(pkt);
                     break; 
+                default:
+                    Debug.Assert(false, "Unknown Message Type: " + pkt);
+                    break;
             }
+        }
+
+        private void handleDestroyEntityOnClient(Packet pkt)
+        {
+            string typeName = pkt.ReadVarStr();
+            string entityID = pkt.ReadEntityID();
+            EntityManager.Instance.DestroyEntity(entityID);
         }
 
         private void handleCreateEntityOnClient(Packet pkt)
         {
-            bool isPlayer = pkt.ReadBool();
+            bool isClientOwner = pkt.ReadBool();
             string entityID = pkt.ReadEntityID();
             string typeName = pkt.ReadVarStr();
             float x = pkt.ReadFloat32();
@@ -154,10 +167,10 @@ namespace GoWorld
             float z = pkt.ReadFloat32();
             float yaw = pkt.ReadFloat32();
             Hashtable attrs = pkt.ReadData() as Hashtable;
-            this.debug ("Handle Create Entity On Client: isPlayer = {0}, entityID = {1}, typeName = {2}, position = {3},{4},{5}, yaw = {6}, attrs = {7}", isPlayer, entityID, typeName, x,y,z, yaw, attrs);
+            this.debug ("Handle Create Entity On Client: IsClientOwner = {0}, EntityID = {1}, TypeName = {2}, Position = {3},{4},{5}, Yaw = {6}, Attrs = {7}", isClientOwner, entityID, typeName, x,y,z, yaw, attrs);
             if (OnCreateEntityOnClient != null )
             {
-                this.OnCreateEntityOnClient(typeName, entityID, isPlayer, x, y, z, yaw, attrs);
+                this.OnCreateEntityOnClient(typeName, entityID, isClientOwner, x, y, z, yaw, attrs);
             }
         }
 
@@ -166,7 +179,11 @@ namespace GoWorld
             string entityID = pkt.ReadEntityID();
             string method = pkt.ReadVarStr();
             object[] args = pkt.ReadArgs();
-            Logger.Info("GameClient", "Handle Call Entity Method On Client: {0}.{1}({2})", entityID, method, args);
+            Logger.Debug("GameClient", "Handle Call Entity Method On Client: {0}.{1}({2})", entityID, method, args);
+            if (OnCallEntityMethodOnClient != null)
+            {
+                this.OnCallEntityMethodOnClient(entityID, method, args);
+            }
             //manager.OnCallEntityMethod(entityID, method, args);
         }
 

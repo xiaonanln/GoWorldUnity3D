@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace GoWorld
+namespace TestConsoleApp
 {
-    internal class ClientSpace : ClientEntity
+    class Monster : GoWorld.ClientEntity
     {
-        protected override void OnCreated()
+        protected override void OnBecomeClientOwner()
         {
             throw new NotImplementedException();
         }
 
-        protected override void OnBecomeClientOwner()
+        protected override void OnCreated()
         {
             throw new NotImplementedException();
         }

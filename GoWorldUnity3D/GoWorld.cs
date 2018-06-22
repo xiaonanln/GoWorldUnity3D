@@ -11,17 +11,11 @@ namespace GoWorld
         public static GameClient GameClient = GameClient.Instance;
         public static EntityManager EntityManager = EntityManager.Instance;
 
-        public delegate void OnEntityCreatedHandler(ClientEntity entity);
-        public delegate void OnEntityDestroyHandler(ClientEntity entity);
-        public delegate void OnBecomePlayerHandler(ClientEntity entity);
-
-        public static OnEntityCreatedHandler OnEntityCreated;
-        public static OnEntityDestroyHandler OnEntityDestroy;
-        public static OnBecomePlayerHandler OnBecomePlayer;
-
         static GoWorld()
         {
             GameClient.OnCreateEntityOnClient += OnCreateEntityOnClient;
+            GameClient.OnCallEntityMethodOnClient += OnCallEntityMethodOnClient;
+            RegisterEntity(typeof(ClientSpace));
         }
 
         public static void Tick()
@@ -29,35 +23,25 @@ namespace GoWorld
             GameClient.Tick();
         }
 
+        public static void RegisterEntity(Type entityType)
+        {
+            EntityManager.RegisterEntity(entityType);
+        }
+
         public static void Connect(string host, int port)
         {
             GameClient.Connect(host, port);
         }
 
-        public static void OnCreateEntityOnClient(string typeName, string entityID, bool isPlayer, float x, float y, float z, float yaw, Hashtable attrs)
+        private static void OnCreateEntityOnClient(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, Hashtable attrs)
         {
-            debug("OnCreateEntityOnClient {0}<{1}>, isPlayer={2}, attrs={3} ...", typeName, entityID, isPlayer, attrs);
-
-            if (typeName == "__space__")
-            {
-                OnEnterSpace(entityID, attrs);
-                return;
-            }
-
-            ClientEntity e = EntityManager.CreateEntity(typeName, entityID, isPlayer, x, y, z, yaw, attrs);
-            if (OnEntityCreated != null)
-            {
-                OnEntityCreated(e);
-            }
-            if (e.IsPlayer && OnBecomePlayer != null)
-            {
-                OnBecomePlayer(e);
-            }
+            debug("OnCreateEntityOnClient {0}<{1}>, IsClientOwner={2}, Attrs={3} ...", typeName, entityID, isClientOwner, attrs);
+            ClientEntity e = EntityManager.CreateEntity(typeName, entityID, isClientOwner, x, y, z, yaw, attrs);
         }
 
-        private static void OnEnterSpace(string entityID, Hashtable attrs)
+        private static void OnCallEntityMethodOnClient(string entityID, string method, object[] args)
         {
-            throw new NotImplementedException();
+            EntityManager.CallEntity(entityID, method, args);
         }
 
         private static void debug(string msg, params object[] args)
