@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientEntity.cs" />
+    <Compile Include="ClientSpace.cs" />
     <Compile Include="Consts.cs" />
     <Compile Include="DataPacker.cs" />
     <Compile Include="EntityManager.cs" />

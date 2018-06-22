@@ -11,6 +11,12 @@ namespace GoWorld
         public static GameClient GameClient = GameClient.Instance;
         public static EntityManager EntityManager = EntityManager.Instance;
 
+        public delegate void OnEntityCreatedHandler(ClientEntity entity);
+        public delegate void OnEntityDestroyHandler(ClientEntity entity);
+
+        public static OnEntityCreatedHandler OnEntityCreated;
+        public static OnEntityDestroyHandler OnEntityDestroy;
+
         static GoWorld()
         {
             GameClient.OnCreateEntityOnClient += OnCreateEntityOnClient;
@@ -28,7 +34,24 @@ namespace GoWorld
 
         public static void OnCreateEntityOnClient(string typeName, string entityID, bool isPlayer, float x, float y, float z, float yaw, Hashtable attrs)
         {
-            debug("OnCreateEntityOnClient %s<%s> ...", typeName, entityID);
+            debug("OnCreateEntityOnClient {0}<{1}>, isPlayer={2}, attrs={3} ...", typeName, entityID, isPlayer, attrs);
+
+            if (typeName == "__space__")
+            {
+                OnEnterSpace(entityID, attrs);
+                return;
+            }
+
+            ClientEntity e = EntityManager.CreateEntity(typeName, entityID, isPlayer, x, y, z, yaw, attrs);
+            if (OnEntityCreated != null)
+            {
+                OnEntityCreated(e);
+            }
+        }
+
+        private static void OnEnterSpace(string entityID, Hashtable attrs)
+        {
+            throw new NotImplementedException();
         }
 
         private static void debug(string msg, params object[] args)

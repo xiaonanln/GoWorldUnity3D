@@ -14,6 +14,7 @@ namespace TestConsoleApp
         {
             GoWorld.GoWorld.Connect("ec2-13-229-128-242.ap-southeast-1.compute.amazonaws.com", 15011);
             Console.WriteLine(GoWorld.GoWorld.GameClient + " created.");
+            GoWorld.GoWorld.OnEntityCreated += OnEntityCreated;
 
             while (true) {
                 GoWorld.GoWorld.Tick();
@@ -22,6 +23,16 @@ namespace TestConsoleApp
 
             Console.WriteLine("Press Any Key To Quit.");
             Console.ReadKey();
+        }
+
+        static void OnEntityCreated(ClientEntity e)
+        {
+            debug("Entity {0} Created!", e);
+        }
+
+        private static void debug(string msg, params object[] args)
+        {
+            Console.WriteLine(String.Format("DEBUG - Program - " + msg, args));
         }
     }
 }

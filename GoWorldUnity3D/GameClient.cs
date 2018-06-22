@@ -16,7 +16,7 @@ namespace GoWorld
         private DateTime startConnectTime = DateTime.MinValue;
         private PacketReceiver packetReceiver;
 
-        internal delegate void OnCreateEntityOnClientHandler();
+        internal delegate void OnCreateEntityOnClientHandler(string typeName, string entityID, bool isPlayer, float x, float y, float z, float yaw, Hashtable attrs);
         internal OnCreateEntityOnClientHandler OnCreateEntityOnClient;
 
         public string Host { get; private set; }
@@ -120,8 +120,10 @@ namespace GoWorld
             float yaw = pkt.ReadFloat32();
             Hashtable attrs = pkt.ReadData() as Hashtable;
             this.debug ("Handle Create Entity On Client: isPlayer = {0}, entityID = {1}, typeName = {2}, position = {3},{4},{5}, yaw = {6}, attrs = {7}", isPlayer, entityID, typeName, x,y,z, yaw, attrs);
-            //manager.OnCreateEntity(typeName, entityID, isPlayer, x, y, z, yaw, clientAttrs);
-            this.OnCreateEntityOnClient();
+            if (OnCreateEntityOnClient != null )
+            {
+                this.OnCreateEntityOnClient(typeName, entityID, isPlayer, x, y, z, yaw, attrs);
+            }
         }
 
         private void assureTCPClientConnected()
