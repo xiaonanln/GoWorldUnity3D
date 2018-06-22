@@ -15,6 +15,7 @@ namespace GoWorld
 
         Dictionary<string, ClientEntity> entities = new Dictionary<string, ClientEntity>();
         Dictionary<string, ClientSpace> spaces = new Dictionary<string, ClientSpace>();
+        ClientEntity Player;
 
         internal ClientEntity CreateEntity(string typeName, string entityID, bool isPlayer, float x, float y, float z, float yaw, Hashtable attrs)
         {
@@ -24,11 +25,24 @@ namespace GoWorld
                 ClientEntity old = this.entities[entityID];
                 debug("Entity {0} Already Exists, Destroying Old One: {1}", entityID, old);
                 this.entities.Remove(entityID);
+                if (old == this.Player)
+                {
+                    this.Player = null;
+                }
                 old.Destroy();
             }
 
             ClientEntity e = new ClientEntity(typeName, entityID, isPlayer, x, y, z, yaw, attrs);
             this.entities[entityID] = e;
+
+            if (e.IsPlayer)
+            {
+                if (this.Player != null)
+                {
+                    Logger.Warn("EntityManager", "Replacing Existing Player: " + this.Player);
+                }
+                this.Player = e; 
+            }
             return e; 
         }
 

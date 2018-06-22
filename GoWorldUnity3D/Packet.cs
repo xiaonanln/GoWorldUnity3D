@@ -16,13 +16,20 @@ namespace GoWorld
             }
         }
 
-        private int readPos;
+        private int readPos, writePos;
 
         public Packet(byte[] payload)
         {
             this.payload = payload;
             this.MsgType = BitConverter.ToUInt16(this.payload, 0);
             this.readPos = 2;
+        }
+
+        public Packet(UInt16 msgtype)
+        {
+            byte[] b =  BitConverter.GetBytes(msgtype);
+            this.payload = b;
+            this.writePos = 2;
         }
 
         public override string ToString()
@@ -63,10 +70,30 @@ namespace GoWorld
             return bytes; 
         }
 
+        private void AppendBytes(byte[] v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void AppendVarStr(string method)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void AppendArgs(object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
         internal string ReadStr(int len)
         {
             byte[] bytes = this.ReadBytes(len);
             return ASCIIEncoding.ASCII.GetString(bytes);
+        }
+
+        private void AppendStr(string s)
+        {
+            this.AppendBytes(ASCIIEncoding.ASCII.GetBytes(s));
         }
 
         private void assureUnreadPayloadLen(int len)
@@ -76,10 +103,10 @@ namespace GoWorld
 
         internal bool ReadBool()
         {
-            return this.ReadBytes() != 0;
+            return this.ReadByte() != 0;
         }
 
-        private byte ReadBytes()
+        private byte ReadByte()
         {
             this.assureUnreadPayloadLen(1);
             byte b = this.payload[this.readPos];
@@ -90,6 +117,12 @@ namespace GoWorld
         internal string ReadEntityID()
         {
             return this.ReadStr(Proto.ENTITYID_LENGTH);
+        }
+
+        internal void AppendEntityID(string entityID)
+        {
+            Debug.Assert(entityID.Length == Proto.ENTITYID_LENGTH);
+            this.AppendStr(entityID);
         }
 
         internal string ReadVarStr()

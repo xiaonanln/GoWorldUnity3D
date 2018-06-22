@@ -42,6 +42,11 @@ namespace GoWorld
             return this.TypeName + "<" + this.ID + "|" + (this.IsDestroyed?"D":"A") + (this.IsPlayer?"P":"") + ">";
         }
 
+        public void CallServer(string entityID, string method, params object[] args)
+        {
+            GameClient.Instance.CallServer(entityID, method, args);
+        }
+
         public void Destroy()
         {
             if (this.IsDestroyed)

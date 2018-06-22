@@ -57,6 +57,20 @@ namespace GoWorld
             }
         }
 
+        internal void CallServer(string entityID, string method, object[] args)
+        {
+            Packet pkt = new Packet(Proto.MT_CALL_ENTITY_METHOD_FROM_CLIENT);
+            pkt.AppendEntityID(entityID);
+            pkt.AppendVarStr(method);
+            pkt.AppendArgs(args);
+            this.sendPacket(pkt);
+        }
+
+        private void sendPacket(Packet pkt)
+        {
+            throw new NotImplementedException();
+        }
+
         private void debug(string msg, params object[] args)
         {
             Console.WriteLine(String.Format("DEBUG - GameClient - " + msg, args));

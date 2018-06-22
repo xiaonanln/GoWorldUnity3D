@@ -13,9 +13,11 @@ namespace GoWorld
 
         public delegate void OnEntityCreatedHandler(ClientEntity entity);
         public delegate void OnEntityDestroyHandler(ClientEntity entity);
+        public delegate void OnBecomePlayerHandler(ClientEntity entity);
 
         public static OnEntityCreatedHandler OnEntityCreated;
         public static OnEntityDestroyHandler OnEntityDestroy;
+        public static OnBecomePlayerHandler OnBecomePlayer;
 
         static GoWorld()
         {
@@ -46,6 +48,10 @@ namespace GoWorld
             if (OnEntityCreated != null)
             {
                 OnEntityCreated(e);
+            }
+            if (e.IsPlayer && OnBecomePlayer != null)
+            {
+                OnBecomePlayer(e);
             }
         }
 
