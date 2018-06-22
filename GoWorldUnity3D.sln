@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoWorldUnity3D", "GoWorldUnity3D\GoWorldUnity3D.csproj", "{B465ED15-02E7-4CEC-8574-D9A05DA8DA87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoWorld", "GoWorldUnity3D\GoWorld.csproj", "{B465ED15-02E7-4CEC-8574-D9A05DA8DA87}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsoleApp", "TestConsoleApp\TestConsoleApp.csproj", "{1C911882-6503-475A-A193-5DA4919B9651}"
 EndProject

@@ -49,9 +49,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GoWorldUnity3D\GoWorldUnity3D.csproj">
+    <ProjectReference Include="..\GoWorldUnity3D\GoWorld.csproj">
       <Project>{b465ed15-02e7-4cec-8574-d9a05da8da87}</Project>
-      <Name>GoWorldUnity3D</Name>
+      <Name>GoWorld</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
