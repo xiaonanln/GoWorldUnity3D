@@ -6,37 +6,36 @@ using System.Text;
 
 namespace GoWorld
 {
-    class ListAttr
+    public class ListAttr
     {
+        private ArrayList list = new ArrayList();
         public int Count;
-        internal void Append(object val)
+
+        internal void append(object val)
         {
-            throw new NotImplementedException();
+            DataPacker.ValidateDataType(val);
+            this.list.Add(val);
         }
 
-        internal void RemoveAt(object p)
+        internal void pop(int index)
         {
-            throw new NotImplementedException();
+            this.list.RemoveAt(index);
         }
 
-        internal void Pop(int index)
+        internal void set(int index, object val)
         {
-            throw new NotImplementedException();
-        }
-
-        internal void Set(int index, object val)
-        {
-            throw new NotImplementedException();
+            DataPacker.ValidateDataType(val);
+            this.list[index] = val;
         }
 
         public IEnumerator GetEnumerator()
         {
-            throw new NotImplementedException();
+            return this.list.GetEnumerator();
         }
 
-        internal object get(int v)
+        internal object get(int index)
         {
-            throw new NotImplementedException();
+            return this.list[index];
         }
     }
 }

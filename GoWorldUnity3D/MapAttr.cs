@@ -29,6 +29,18 @@ namespace GoWorld
             return (bool)(val);
         }
 
+        public MapAttr GetMapAttr(string key)
+        {
+            object val = this.get(key);
+            return val != null ? val as MapAttr : new MapAttr();
+        }
+
+        public ListAttr GetListAttr(string key)
+        {
+            object val = this.get(key);
+            return val != null ? val as ListAttr : new ListAttr();
+        }
+
         internal object get(string key)
         {
             try
@@ -40,15 +52,15 @@ namespace GoWorld
             }
         }
 
-        public void Put(string key, object val)
+        internal void put(string key, object val)
         {
             DataPacker.ValidateDataType(val);
             this.dict[key] = val;
         }
 
-        internal IDictionaryEnumerator GetEnumerator()
+        public IDictionaryEnumerator GetEnumerator()
         {
-            throw new NotImplementedException();
+            return this.dict.GetEnumerator();
         }
 
         public bool ContainsKey(string key)
@@ -69,7 +81,7 @@ namespace GoWorld
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            this.dict.Clear();
         }
     }
 }

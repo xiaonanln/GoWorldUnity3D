@@ -140,7 +140,7 @@ namespace GoWorld
         internal void OnMapAttrChange(ListAttr path, string key, object val)
         {
             MapAttr t = this.getAttrByPath(path) as MapAttr;
-            t.Put(key, val);
+            t.put(key, val);
             string rootkey = path != null && path.Count > 0 ? (string)path.get(0) : key;
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
@@ -180,7 +180,7 @@ namespace GoWorld
         internal void OnListAttrAppend(ListAttr path, object val)
         {
             ListAttr l = getAttrByPath(path) as ListAttr;
-            l.Append(val);
+            l.append(val);
             string rootkey = (string)path.get(0);
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
@@ -192,7 +192,7 @@ namespace GoWorld
         internal void OnListAttrPop(ListAttr path)
         {
             ListAttr l = getAttrByPath(path) as ListAttr;
-            l.Pop(l.Count - 1);
+            l.pop(l.Count - 1);
             string rootkey = (string)path.get(0);
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
@@ -204,7 +204,7 @@ namespace GoWorld
         internal void OnListAttrChange(ListAttr path, int index, object val)
         {
             ListAttr l = getAttrByPath(path) as ListAttr;
-            l.Set(index, val);
+            l.set(index, val);
             string rootkey = (string)path.get(0);
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)

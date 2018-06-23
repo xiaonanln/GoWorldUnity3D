@@ -80,8 +80,7 @@ namespace GoWorld
             if (typeof(int).IsInstanceOfType(obj))
             {
                 return (Int64)(int)obj;
-            }
-            ValidateDataType(obj);
+            } 
             return obj;
         }
 
@@ -93,7 +92,7 @@ namespace GoWorld
             {
                 MsgPack.MessagePackObject key = e.Current.Key;
                 MsgPack.MessagePackObject val = e.Current.Value;
-                t.Put(key.AsString(), convertFromMsgPackObject(val));
+                t.put(key.AsString(), convertFromMsgPackObject(val));
             }
             return t;
         }
@@ -104,7 +103,7 @@ namespace GoWorld
             IEnumerator<MsgPack.MessagePackObject> e = mpobj.GetEnumerator();
             while (e.MoveNext())
             {
-                list.Append(convertFromMsgPackObject(e.Current));
+                list.append(convertFromMsgPackObject(e.Current));
             }
             return list;
         }
