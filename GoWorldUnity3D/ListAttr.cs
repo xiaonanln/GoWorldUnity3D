@@ -9,7 +9,42 @@ namespace GoWorld
     public class ListAttr
     {
         private ArrayList list = new ArrayList();
-        public int Count;
+
+        public int Count { get
+            {
+                return this.list.Count;
+            }
+        }
+
+        public Int64 GetInt(int index)
+        {
+            object val = this.get(index);
+            return (Int64)val;
+        }
+
+        public bool GetBool(int index)
+        {
+            object val = this.get(index);
+            return (bool)val; ;
+        }
+
+        public string GetStr(int index)
+        {
+            object val = this.get(index);
+            return val != null ? val as string : "";
+        }
+
+        public MapAttr GetMapAttr(int index)
+        {
+            object val = this.get(index);
+            return val != null ? val as MapAttr : new MapAttr();
+        }
+
+        public ListAttr GetListAttr(int index)
+        {
+            object val = this.get(index);
+            return val != null ? val as ListAttr : new ListAttr();
+        }
 
         internal void append(object val)
         {
