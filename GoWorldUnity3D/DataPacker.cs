@@ -80,7 +80,30 @@ namespace GoWorldUnity3D
             if (typeof(int).IsInstanceOfType(obj))
             {
                 return (Int64)(int)obj;
-            } 
+            } else if (typeof(byte).IsInstanceOfType(obj))
+            {
+                return (Int64)(byte)obj;
+            }
+            else if (typeof(short).IsInstanceOfType(obj))
+            {
+                return (Int64)(short)obj;
+            }
+            else if (typeof(ushort).IsInstanceOfType(obj))
+            {
+                return (Int64)(ushort)obj;
+            }
+            else if (typeof(char).IsInstanceOfType(obj))
+            {
+                return (Int64)(char)obj;
+            }
+            else if (typeof(uint).IsInstanceOfType(obj))
+            {
+                return (Int64)(uint)obj;
+            }
+            else if (typeof(ulong).IsInstanceOfType(obj))
+            {
+                return (Int64)(ulong)obj;
+            }
             return obj;
         }
 

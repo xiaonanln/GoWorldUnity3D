@@ -53,6 +53,7 @@
     <Compile Include="EntityManager.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GoWorld.cs" />
+    <Compile Include="GoWorldGameObjectHelper.cs" />
     <Compile Include="ListAttr.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MapAttr.cs" />

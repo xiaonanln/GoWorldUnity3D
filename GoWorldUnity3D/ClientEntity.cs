@@ -6,18 +6,19 @@ namespace GoWorldUnity3D
 {
     public abstract class ClientEntity
     {
-        public GameObject GameObject { get {
-                return this.gameObject;
+        public GameObject gameObject { get {
+                return this._gameObject;
             } set {
-                if (this.gameObject != value)
+                if (this._gameObject != value)
                 {
-                    this.gameObject = value;
-                    this.onGameObjectChanged();
+                    GameObject oldGameObject = this._gameObject;
+                    this._gameObject = value;
+                    this.onGameObjectChanged(oldGameObject);
                 }
             }
         }
 
-        private GameObject gameObject;
+        private GameObject _gameObject;
         public string ID { get; internal set; }
         public string TypeName { get
             {
@@ -143,9 +144,19 @@ namespace GoWorldUnity3D
             }
         }
 
-        private void onGameObjectChanged()
+        private void onGameObjectChanged(GameObject oldGameObject)
         {
-            throw new NotImplementedException();
+            if (oldGameObject != null)
+            {
+                GoWorldGameObjectHelper helper = oldGameObject.GetComponent<GoWorldGameObjectHelper>();
+                helper.Entity = null;
+            }
+
+            if (this.gameObject != null)
+            {
+                GoWorldGameObjectHelper helper = this.gameObject.AddComponent<GoWorldGameObjectHelper>();
+                helper.Entity = this;
+            }
         }
 
         protected abstract void OnCreated();

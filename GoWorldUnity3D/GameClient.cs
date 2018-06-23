@@ -244,12 +244,12 @@ namespace GoWorldUnity3D
             Logger.Info( this.ToString(),"Connecting ...");
             this.tcpClient = new TcpClient(AddressFamily.InterNetwork);
             this.tcpClient.NoDelay = true;
-            this.tcpClient.Client.Blocking = false;
             this.tcpClient.SendTimeout = 5000;
             this.tcpClient.ReceiveBufferSize = Proto.MAX_PAYLOAD_LEN + Proto.SIZE_FIELD_SIZE;
             this.startConnectTime = DateTime.Now;
             this.packetReceiver = new PacketReceiver(this.tcpClient);
             this.tcpClient.Connect(this.Host, this.Port);
+            this.tcpClient.Client.Blocking = false;
             //this.tcpClient.BeginConnect(this.Host, this.Port, this.onConnected, null); // TODO: BeginConnect fail in Unity3D
             this.onConnected(null);
         }

@@ -20,7 +20,15 @@ namespace GoWorldUnity3D
         public Int64 GetInt(string key)
         {
             object val = this.get(key);
-            return (Int64)val;
+            try
+            {
+                return (Int64)val;
+            } catch(InvalidCastException)
+            {
+                Logger.Error("MapAttr", "Can Not Convert From Type {0} To Int64", val.GetType());
+                return 0;
+            }
+            
         }
 
         public bool GetBool(string key)
