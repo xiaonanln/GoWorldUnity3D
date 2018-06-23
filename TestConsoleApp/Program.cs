@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GoWorld;
+using GoWorldUnity3D;
 using System.Threading;
 
 namespace TestConsoleApp
@@ -12,14 +12,14 @@ namespace TestConsoleApp
     {
         static void Main(string[] args)
         {
-            GoWorld.GoWorld.RegisterEntity(typeof(Account));
-            GoWorld.GoWorld.RegisterEntity(typeof(Player));
-            GoWorld.GoWorld.RegisterEntity(typeof(Monster));
-            GoWorld.GoWorld.Connect("ec2-13-229-128-242.ap-southeast-1.compute.amazonaws.com", 15011);
-            Console.WriteLine(GoWorld.GoWorld.GameClient + " created.");
+            GoWorldUnity3D.GoWorld.RegisterEntity(typeof(Account));
+            GoWorldUnity3D.GoWorld.RegisterEntity(typeof(Player));
+            GoWorldUnity3D.GoWorld.RegisterEntity(typeof(Monster));
+            GoWorldUnity3D.GoWorld.Connect("ec2-13-229-128-242.ap-southeast-1.compute.amazonaws.com", 15011);
+            Console.WriteLine(GoWorldUnity3D.GoWorld.GameClient + " created.");
 
             while (true) {
-                GoWorld.GoWorld.Tick();
+                GoWorldUnity3D.GoWorld.Update();
                 Thread.Sleep(100);
             }
 

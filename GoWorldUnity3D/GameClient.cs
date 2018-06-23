@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Diagnostics;
 using System.Collections;
 
-namespace GoWorld
+namespace GoWorldUnity3D
 {
     public class GameClient
     {
@@ -91,7 +91,7 @@ namespace GoWorld
             }
         }
 
-        internal void Tick()
+        internal void Update()
         {
             if (this.Host == "")
             {
@@ -242,14 +242,16 @@ namespace GoWorld
 
             // no tcpClient == not connecting, start new connection ...
             Logger.Info( this.ToString(),"Connecting ...");
-            this.tcpClient = new TcpClient();
+            this.tcpClient = new TcpClient(AddressFamily.InterNetwork);
             this.tcpClient.NoDelay = true;
             this.tcpClient.Client.Blocking = false;
             this.tcpClient.SendTimeout = 5000;
             this.tcpClient.ReceiveBufferSize = Proto.MAX_PAYLOAD_LEN + Proto.SIZE_FIELD_SIZE;
             this.startConnectTime = DateTime.Now;
             this.packetReceiver = new PacketReceiver(this.tcpClient);
-            this.tcpClient.BeginConnect(this.Host, this.Port, this.onConnected, null);
+            this.tcpClient.Connect(this.Host, this.Port);
+            //this.tcpClient.BeginConnect(this.Host, this.Port, this.onConnected, null); // TODO: BeginConnect fail in Unity3D
+            this.onConnected(null);
         }
 
         private void checkConnectTimeout()

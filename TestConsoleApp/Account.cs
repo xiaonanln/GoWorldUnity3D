@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TestConsoleApp
 {
-    class Account : GoWorld.ClientEntity
+    class Account : GoWorldUnity3D.ClientEntity
     {
 
         const string USERNAME = "unity3dlib2";
@@ -15,12 +15,12 @@ namespace TestConsoleApp
 
         protected override void OnCreated()
         {
-            GoWorld.Logger.Info(this.ToString(), "OnCreated ...");
+            GoWorldUnity3D.Logger.Info(this.ToString(), "OnCreated ...");
         }
 
         protected override void OnBecomeClientOwner()
         {
-            GoWorld.Logger.Info(this.ToString(), "OnBecomeClientOwner ...");
+            GoWorldUnity3D.Logger.Info(this.ToString(), "OnBecomeClientOwner ...");
 
             // Account created, logging 
             this.CallServer("Register", USERNAME, PASSWORD);
@@ -28,12 +28,12 @@ namespace TestConsoleApp
 
         protected override void OnDestroy()
         {
-            GoWorld.Logger.Info(this.ToString(), "OnDestroy ...");
+            GoWorldUnity3D.Logger.Info(this.ToString(), "OnDestroy ...");
         }
 
         public void ShowError(string err)
         {
-            GoWorld.Logger.Error("ERROR", err);
+            GoWorldUnity3D.Logger.Error("ERROR", err);
 
             if (err.Contains("aready exists"))
             {
@@ -42,7 +42,7 @@ namespace TestConsoleApp
         }
         public void ShowInfo(string info)
         {
-            GoWorld.Logger.Info("INFO", info);
+            GoWorldUnity3D.Logger.Info("INFO", info);
             if (info.Contains("Registered Successfully"))
             {
                 this.onRegisterSuccessfully();
@@ -63,6 +63,10 @@ namespace TestConsoleApp
         protected override void OnLeaveSpace()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void Update()
+        {
         }
     }
 }

@@ -4,12 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GoWorld
+namespace GoWorldUnity3D
 {
     public class GoWorld
     {
         public static GameClient GameClient = GameClient.Instance;
         public static EntityManager EntityManager = EntityManager.Instance;
+        public static ClientEntity ClientOwner
+        {
+            get
+            {
+                return EntityManager.Instance.ClientOwner;
+            }
+        }
+
+        public static ClientSpace Space
+        {
+            get
+            {
+                return EntityManager.Instance.Space;
+            }
+        }
 
         static GoWorld()
         {
@@ -18,14 +33,20 @@ namespace GoWorld
             RegisterEntity(typeof(ClientSpace));
         }
 
-        public static void Tick()
+        public static void Update()
         {
-            GameClient.Tick();
+            GameClient.Update();
+            EntityManager.Update();
         }
 
         public static void RegisterEntity(Type entityType)
         {
             EntityManager.RegisterEntity(entityType);
+        }
+
+        public static ClientEntity GetEntity(string entityID)
+        {
+            return EntityManager.getEntity(entityID);
         }
 
         public static void Connect(string host, int port)

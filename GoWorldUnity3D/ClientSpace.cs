@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GoWorld
+namespace GoWorldUnity3D
 {
-    internal class ClientSpace : ClientEntity
+    public class ClientSpace : ClientEntity
     {
         protected override void OnCreated()
         {
@@ -29,6 +29,10 @@ namespace GoWorld
         protected override void OnLeaveSpace()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void Update()
+        {
         }
     }
 }

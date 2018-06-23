@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace GoWorld
+namespace GoWorldUnity3D
 {
     public class EntityManager
     {
@@ -15,8 +15,8 @@ namespace GoWorld
 
         Dictionary<string, ClientEntity> entities = new Dictionary<string, ClientEntity>();
         Dictionary<string, Type> entityTypes = new Dictionary<string, Type>();
-        ClientEntity ClientOwner;
-        ClientSpace Space;
+        public ClientEntity ClientOwner;
+        public ClientSpace Space;
 
         internal ClientEntity CreateEntity(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, MapAttr attrs)
         {
@@ -74,6 +74,25 @@ namespace GoWorld
             return e; 
         }
 
+        internal void Update()
+        {
+            foreach (ClientEntity entity in this.entities.Values)
+            {
+                entity.update();
+            }
+        }
+
+        internal ClientEntity getEntity(string entityID)
+        {
+            try
+            {
+                return this.entities[entityID]; 
+            } catch (KeyNotFoundException)
+            {
+                return null;
+            }
+        }
+
         private void onEnterSpace()
         {
             foreach (ClientEntity entity in this.entities.Values)
@@ -123,7 +142,7 @@ namespace GoWorld
             Debug.Assert(entityType.IsSubclassOf(typeof(ClientEntity)));
 
             string entityTypeName = entityType.Name;
-            Debug.Assert(!this.entityTypes.ContainsKey(entityTypeName));
+            Debug.Assert(!this.entityTypes.ContainsKey(entityTypeName) || this.entityTypes[entityTypeName] == entityType);
             this.entityTypes[entityTypeName] = entityType;
         }
 

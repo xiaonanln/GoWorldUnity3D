@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace GoWorld
+namespace GoWorldUnity3D
 {
     public class MapAttr
     {

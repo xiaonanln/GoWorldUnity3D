@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using UnityEngine;
 
-namespace GoWorld
+namespace GoWorldUnity3D
 {
     public abstract class ClientEntity
     {
@@ -102,6 +102,11 @@ namespace GoWorld
             this.Attrs = attrs;
         }
 
+        internal void update()
+        {
+            this.Update();
+        }
+
         internal void leaveSpace()
         {
             try
@@ -148,6 +153,7 @@ namespace GoWorld
         protected abstract void OnEnterSpace();
         protected abstract void OnLeaveSpace();
         protected abstract void OnDestroy();
+        protected abstract void Update();
 
         internal void OnSyncEntityInfo(float x, float y, float z, float yaw)
         {

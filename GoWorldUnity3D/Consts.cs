@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GoWorld
+namespace GoWorldUnity3D
 {
     class Consts
     {

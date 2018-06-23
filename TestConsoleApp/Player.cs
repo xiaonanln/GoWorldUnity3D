@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TestConsoleApp
 {
-    class Player : GoWorld.ClientEntity
+    class Player : GoWorldUnity3D.ClientEntity
     {
         protected override void OnBecomeClientOwner()
         {
@@ -22,22 +22,26 @@ namespace TestConsoleApp
 
         protected override void OnEnterSpace()
         {
-            GoWorld.Logger.Info(this.ToString(), "Enter Space ... Action = {0}", this.Attrs.GetStr("action"));
+            GoWorldUnity3D.Logger.Info(this.ToString(), "Enter Space ... Action = {0}", this.Attrs.GetStr("action"));
         }
 
         protected override void OnLeaveSpace()
         {
-            GoWorld.Logger.Info(this.ToString(), "Leave Space ...");
+            GoWorldUnity3D.Logger.Info(this.ToString(), "Leave Space ...");
         }
 
         public void OnAttrChange_action()
         {
-            GoWorld.Logger.Warn(this.ToString(), "Action Changed To: {0}", this.Attrs.GetStr("action"));
+            GoWorldUnity3D.Logger.Warn(this.ToString(), "Action Changed To: {0}", this.Attrs.GetStr("action"));
         }
 
         public void OnAttrChange_hp()
         {
-            GoWorld.Logger.Warn(this.ToString(), "HP Changed To: {0}", this.Attrs.GetInt("hp"));
+            GoWorldUnity3D.Logger.Warn(this.ToString(), "HP Changed To: {0}", this.Attrs.GetInt("hp"));
+        }
+
+        protected override void Update()
+        {
         }
     }
 }
