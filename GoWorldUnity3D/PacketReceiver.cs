@@ -49,12 +49,11 @@ namespace GoWorld
                 this.recvPayloadLen = BitConverter.ToUInt32(recvPayloadLenBuff, 0);
                 if (this.recvPayloadLen < 2 || this.recvPayloadLen > Proto.MAX_PAYLOAD_LEN)
                 {
-                    Console.WriteLine("Invalid Packet Payload Length: " + this.recvPayloadLen);
+                    Logger.Error("PacketReceiver", "Invalid Packet Payload Length: " + this.recvPayloadLen);
                     this.tcpClient.Close();
                     return null;
                 }
                 this.recvState = RecvState.receivingPayload;
-                Console.WriteLine("Read Packet Payload Length: " + this.recvPayloadLen);
                 this.recvPayloadBuff = new byte[this.recvPayloadLen];
             } 
 

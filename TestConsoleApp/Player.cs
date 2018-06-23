@@ -10,27 +10,34 @@ namespace TestConsoleApp
     {
         protected override void OnBecomeClientOwner()
         {
-            throw new NotImplementedException();
         }
 
         protected override void OnCreated()
         {
-            throw new NotImplementedException();
         }
 
         protected override void OnDestroy()
         {
-            throw new NotImplementedException();
         }
 
         protected override void OnEnterSpace()
         {
-            throw new NotImplementedException();
+            GoWorld.Logger.Info(this.ToString(), "Enter Space ... Action = {0}", this.Attrs["action"]);
         }
 
         protected override void OnLeaveSpace()
         {
-            throw new NotImplementedException();
+            GoWorld.Logger.Info(this.ToString(), "Leave Space ...");
+        }
+
+        public void OnAttrChange_action()
+        {
+            GoWorld.Logger.Warn(this.ToString(), "Action Changed To: {0}", this.Attrs["action"]);
+        }
+
+        public void OnAttrChange_hp()
+        {
+            GoWorld.Logger.Warn(this.ToString(), "HP Changed To: {0}", this.Attrs["hp"]);
         }
     }
 }

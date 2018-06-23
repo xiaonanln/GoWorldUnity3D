@@ -15,22 +15,25 @@ namespace TestConsoleApp
 
         protected override void OnCreated()
         {
-            throw new NotImplementedException();
         }
 
         protected override void OnDestroy()
         {
-            throw new NotImplementedException();
         }
 
         protected override void OnEnterSpace()
         {
-            throw new NotImplementedException();
+            GoWorld.Logger.Info(this.ToString(), "Enter Space ...");
         }
 
         protected override void OnLeaveSpace()
         {
-            throw new NotImplementedException();
+            GoWorld.Logger.Info(this.ToString(), "Leave Space ...");
+        }
+
+        public void DisplayAttack(string victimID)
+        {
+            GoWorld.Logger.Info(this.ToString(), "Attacking Player {0}", victimID);
         }
     }
 }

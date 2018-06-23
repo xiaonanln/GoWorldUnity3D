@@ -55,7 +55,7 @@ namespace GoWorld
                 this.tcpClient = null;
                 this.packetReceiver = null;
                 this.startConnectTime = DateTime.MinValue;
-                this.debug("Disconnected");
+                Logger.Warn(this.ToString(), "Disconnected");
             }
         }
 
@@ -91,11 +91,6 @@ namespace GoWorld
             }
         }
 
-        private void debug(string msg, params object[] args)
-        {
-            Console.WriteLine(String.Format("DEBUG - GameClient - " + msg, args));
-        }
-
         internal void Tick()
         {
             if (this.Host == "")
@@ -114,11 +109,9 @@ namespace GoWorld
 
         private void tryRecvNextPacket()
         {
-            this.debug("Available: " + this.tcpClient.Available);
             Packet pkt =  this.packetReceiver.RecvPacket();
             if (pkt != null)
             {
-                this.debug("Packet Received: " + pkt);
                 this.handlePacket(pkt);
             }
         }
@@ -130,7 +123,7 @@ namespace GoWorld
             {
                 UInt16 gateid = pkt.ReadUInt16();
                 string clientid = pkt.ReadStr(Proto.CLIENTID_LENGTH);
-                this.debug("Gate ID = " + gateid + ", Client ID = " + clientid + " Ignored");
+                //this.debug("Gate ID = " + gateid + ", Client ID = " + clientid + " Ignored");
             }
 
             switch (msgtype)
@@ -143,10 +136,59 @@ namespace GoWorld
                     break;
                 case Proto.MT_DESTROY_ENTITY_ON_CLIENT:
                     this.handleDestroyEntityOnClient(pkt);
-                    break; 
+                    break;
+                case Proto.MT_SYNC_POSITION_YAW_ON_CLIENTS:
+                    this.handleSyncPositionYawOnClients(pkt);
+                    break;
+                case Proto.MT_NOTIFY_MAP_ATTR_CHANGE_ON_CLIENT:
+                    this.handleNotifyMapAttrChangeOnClient(pkt);
+                    break;
+                case Proto.MT_NOTIFY_MAP_ATTR_DEL_ON_CLIENT:
+                    this.handleNotifyMapAttrDelOnClient(pkt);
+                    break;
+                case Proto.MT_NOTIFY_MAP_ATTR_CLEAR_ON_CLIENT:
+                    this.handleNotifyMapAttrClearOnClient(pkt);
+                    break;
                 default:
                     Debug.Assert(false, "Unknown Message Type: " + pkt);
                     break;
+            }
+        }
+
+        private void handleNotifyMapAttrClearOnClient(Packet pkt)
+        {
+            string entityID = pkt.ReadEntityID();
+            ArrayList path = pkt.ReadData() as ArrayList;
+            EntityManager.Instance.OnMapAttrClear(entityID, path);
+        }
+
+        private void handleNotifyMapAttrDelOnClient(Packet pkt)
+        {
+            string entityID = pkt.ReadEntityID();
+            ArrayList path = pkt.ReadData() as ArrayList;
+            string key = pkt.ReadVarStr();
+            EntityManager.Instance.OnMapAttrDel(entityID, path, key);
+        }
+
+        private void handleNotifyMapAttrChangeOnClient(Packet pkt)
+        {
+            string entityID = pkt.ReadEntityID();
+            ArrayList path = pkt.ReadData() as ArrayList;
+            string key = pkt.ReadVarStr();
+            object val = pkt.ReadData();
+            EntityManager.Instance.OnMapAttrChange(entityID, path, key, val);
+        }
+
+        private void handleSyncPositionYawOnClients(Packet pkt)
+        {
+            while (pkt.UnreadPayloadLen > 0)
+            {
+                string entityID = pkt.ReadEntityID();
+                float x = pkt.ReadFloat32();
+                float y = pkt.ReadFloat32();
+                float z = pkt.ReadFloat32();
+                float yaw = pkt.ReadFloat32();
+                EntityManager.Instance.OnSyncEntityInfo(entityID, x, y, z, yaw);
             }
         }
 
@@ -167,7 +209,7 @@ namespace GoWorld
             float z = pkt.ReadFloat32();
             float yaw = pkt.ReadFloat32();
             Hashtable attrs = pkt.ReadData() as Hashtable;
-            this.debug ("Handle Create Entity On Client: IsClientOwner = {0}, EntityID = {1}, TypeName = {2}, Position = {3},{4},{5}, Yaw = {6}, Attrs = {7}", isClientOwner, entityID, typeName, x,y,z, yaw, attrs);
+            // this.debug ("Handle Create Entity On Client: IsClientOwner = {0}, EntityID = {1}, TypeName = {2}, Position = {3},{4},{5}, Yaw = {6}, Attrs = {7}", isClientOwner, entityID, typeName, x,y,z, yaw, attrs);
             if (OnCreateEntityOnClient != null )
             {
                 this.OnCreateEntityOnClient(typeName, entityID, isClientOwner, x, y, z, yaw, attrs);
@@ -199,7 +241,7 @@ namespace GoWorld
             }
 
             // no tcpClient == not connecting, start new connection ...
-            this.debug("Connecting ...");
+            Logger.Info( this.ToString(),"Connecting ...");
             this.tcpClient = new TcpClient();
             this.tcpClient.NoDelay = true;
             this.tcpClient.Client.Blocking = false;
@@ -223,11 +265,11 @@ namespace GoWorld
         {
             if (this.tcpClient.Connected)
             {
-                this.debug("Connected " + this.tcpClient.Connected);
+                Logger.Info(this.ToString(), "Connected " + this.tcpClient.Connected);
             }
             else
             {
-                this.debug("Connect Failed!");
+                Logger.Warn(this.ToString(), "Connect Failed!");
                 this.disconnectTCPClient();
             }
         }

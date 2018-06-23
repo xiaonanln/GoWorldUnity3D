@@ -10,7 +10,6 @@ namespace GoWorld
     {
         protected override void OnCreated()
         {
-            throw new NotImplementedException();
         }
 
         protected override void OnBecomeClientOwner()
@@ -20,7 +19,6 @@ namespace GoWorld
 
         protected override void OnDestroy()
         {
-            throw new NotImplementedException();
         }
 
         protected override void OnEnterSpace()

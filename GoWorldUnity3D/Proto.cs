@@ -50,6 +50,7 @@ namespace GoWorld
         internal const UInt16 MT_UPDATE_YAW_ON_CLIENT = 1011;
         internal const UInt16 MT_SET_CLIENTPROXY_FILTER_PROP = 1012;
         internal const UInt16 MT_CLEAR_CLIENTPROXY_FILTER_PROPS = 1013;
+        internal const UInt16 MT_NOTIFY_MAP_ATTR_CLEAR_ON_CLIENT = 1014;
 
         // add more ...
 

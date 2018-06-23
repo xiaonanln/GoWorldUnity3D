@@ -24,11 +24,7 @@ namespace GoWorld
             }
         }
         public bool IsClientOwner { get; internal set; }
-        public float x;
-        public float y;
-        public float z;
-        public float yaw;
-        public Hashtable attrs;
+        public Hashtable Attrs;
 
         public bool IsDestroyed { get; private set; }
         public Vector3 Position { get; internal set; }
@@ -56,17 +52,31 @@ namespace GoWorld
                 return;
             }
 
+            EntityManager.Instance.delEntity(this);
+
             try
             {
                 this.OnDestroy();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Logger.Error(this.ToString(), e.ToString());
             }
 
-            EntityManager.Instance.delEntity(this);
             this.IsDestroyed = true;
-            this.attrs = null;
+            this.Attrs = null;
+        }
+
+        internal void onCreated()
+        {
+            try
+            {
+                this.OnCreated();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(this.ToString(), e.ToString());
+            }
         }
 
         internal void init(Type entityType, string entityID, bool isClientOwner, float x, float y, float z, float yaw, Hashtable attrs)
@@ -76,15 +86,7 @@ namespace GoWorld
             this.IsClientOwner = isClientOwner;
             this.Position = new Vector3(x, y, z);
             this.Yaw = yaw;
-            this.attrs = attrs;
-
-            try
-            {
-                this.OnCreated();
-            } catch (Exception e)
-            {
-                Logger.Error(this.ToString(), e.ToString());
-            }
+            this.Attrs = attrs;
         }
 
         internal void leaveSpace()
@@ -129,5 +131,111 @@ namespace GoWorld
         protected abstract void OnLeaveSpace();
         protected abstract void OnDestroy();
 
+        internal void OnSyncEntityInfo(float x, float y, float z, float yaw)
+        {
+            this.Position = new Vector3(x, y, z);
+            this.Yaw = yaw;
+        }
+
+        internal void OnMapAttrChange(ArrayList path, string key, object val)
+        {
+            Hashtable t = this.getAttrByPath(path) as Hashtable;
+            t[key] = val;
+            string rootkey = path != null && path.Count > 0 ? (string)path[0] : key;
+            System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
+            if (callback != null)
+            {
+                callback.Invoke(this, new object[0]);
+            }
+        }
+
+        internal void OnMapAttrDel(ArrayList path, string key)
+        {
+            Hashtable t = this.getAttrByPath(path) as Hashtable;
+            if (t.ContainsKey(key))
+            {
+                t.Remove(key);
+            }
+            string rootkey = path != null && path.Count > 0 ? (string)path[0] : key;
+            System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
+            if (callback != null)
+            {
+                callback.Invoke(this, new object[0]);
+            }
+        }
+
+        internal void OnMapAttrClear(ArrayList path)
+        {
+            Debug.Assert(path != null && path.Count > 0);
+            Hashtable t = this.getAttrByPath(path) as Hashtable;
+            t.Clear();
+            string rootkey = (string)path[0];
+            System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
+            if (callback != null)
+            {
+                callback.Invoke(this, new object[0]);
+            }
+        }
+        
+        internal void OnListAttrAppend(ArrayList path, object val)
+        {
+            ArrayList l = getAttrByPath(path) as ArrayList;
+            l.Add(val);
+            string rootkey = (string)path[0];
+            System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
+            if (callback != null)
+            {
+                callback.Invoke(this, new object[0]);
+            }
+        }
+
+        internal void OnListAttrPop(ArrayList path)
+        {
+            ArrayList l = getAttrByPath(path) as ArrayList;
+            l.RemoveAt(l.Count - 1);
+            string rootkey = (string)path[0];
+            System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
+            if (callback != null)
+            {
+                callback.Invoke(this, new object[0]);
+            }
+        }
+
+        internal void OnListAttrChange(ArrayList path, int index, object val)
+        {
+            ArrayList l = getAttrByPath(path) as ArrayList;
+            l[index] = val;
+            string rootkey = (string)path[0];
+            System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
+            if (callback != null)
+            {
+                callback.Invoke(this, new object[0]);
+            }
+        }
+
+        internal object getAttrByPath(ArrayList path)
+        {
+            object attr = this.Attrs;
+
+            if (path == null)
+            {
+                return attr;
+            }
+
+            foreach (object key in path)
+            {
+                if (key.GetType() == typeof(string))
+                {
+                    attr = (attr as Hashtable)[(string)key];
+                }
+                else
+                {
+                    attr = (attr as ArrayList)[(int)key];
+                }
+            }
+
+            Logger.Debug(this.ToString(), "Get Attr By Path: {0} = {1}", path.ToString(), attr);
+            return attr;
+        }
     }
 }

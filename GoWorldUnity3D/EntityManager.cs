@@ -37,20 +37,12 @@ namespace GoWorld
             // create new entity of specified type 
             Type entityType = this.entityTypes[typeName];
             ClientEntity e = Activator.CreateInstance(entityType) as ClientEntity;
-            this.entities[entityID] = e;
             e.init(entityType, entityID, isClientOwner, x, y, z, yaw, attrs);
-            
-            if (e.IsClientOwner)
-            {
-                if (this.ClientOwner != null)
-                {
-                    Logger.Warn("EntityManager", "Replacing Existing Player: " + this.ClientOwner);
-                    this.ClientOwner.Destroy();
-                }
+            this.entities[entityID] = e;
+            e.onCreated();
 
-                this.ClientOwner = e;
-                e.becomeClientOwner();
-            } else if (e.IsSpace)
+            // new entity created 
+            if (e.IsSpace)
             {
                 // enter new space
                 if (this.Space != null)
@@ -60,6 +52,24 @@ namespace GoWorld
 
                 this.Space = e as ClientSpace;
                 this.onEnterSpace();
+            } else
+            {
+                if (e.IsClientOwner)
+                {
+                    if (this.ClientOwner != null)
+                    {
+                        Logger.Warn("EntityManager", "Replacing Existing Player: " + this.ClientOwner);
+                        this.ClientOwner.Destroy();
+                    }
+
+                    this.ClientOwner = e;
+                    e.becomeClientOwner();
+                }
+
+                if (this.Space != null)
+                {
+                    e.enterSpace();
+                }
             }
             return e; 
         }
@@ -75,23 +85,37 @@ namespace GoWorld
             }
         }
 
+        private void onLeaveSpace()
+        {
+            foreach (ClientEntity entity in this.entities.Values)
+            {
+                if (!entity.IsSpace)
+                {
+                    entity.leaveSpace();
+                }
+            }
+        }
+
+
         internal void delEntity(ClientEntity e)
         {
-            if (this.ClientOwner == e)
-            {
-                this.ClientOwner = null;
-            } else if (this.Space == e)
+            this.entities.Remove(e.ID);
+            if (this.Space == e)
             {
                 this.Space = null;
                 this.onLeaveSpace();
+            } else
+            {
+                if (this.ClientOwner == e)
+                {
+                    this.ClientOwner = null;
+                }
+
+                if (this.Space != null)
+                {
+                    e.leaveSpace();
+                }
             }
-
-            this.entities.Remove(e.ID);
-        }
-
-        private void onLeaveSpace()
-        {
-            throw new NotImplementedException();
         }
 
         internal void RegisterEntity(Type entityType)
@@ -105,17 +129,17 @@ namespace GoWorld
 
         internal void CallEntity(string entityID, string method, object[] args)
         {
-            Logger.Debug("EntityManager", "Call Entity {0}: {1}({2} Args)", entityID, method, args.Length);
             ClientEntity entity; 
             if (this.entities.TryGetValue(entityID, out entity))
             {
                 System.Reflection.MethodInfo methodInfo = entity.GetType().GetMethod(method);
                 if (methodInfo == null)
                 {
-                    Logger.Error("EntityManager", "Call Entity {0}.{1}({2} Args) Failed: Public Method Not Found", entityID, method, args.Length);
+                    Logger.Error("EntityManager", "Call Entity {0}.{1}({2} Args) Failed: Public Method Not Found", entity, method, args.Length);
                     return;
                 }
 
+                Logger.Debug("EntityManager", "Call Entity {0}: {1}({2} Args)", entity, method, args.Length);
                 methodInfo.Invoke(entity, args);
             } else
             {
@@ -134,6 +158,69 @@ namespace GoWorld
             {
                 Logger.Error("EntityManager", "Destroy Entity {0} Failed: Entity Not Found", entityID);
             }
+        }
+
+        internal void OnSyncEntityInfo(string entityID, float x, float y, float z, float yaw)
+        {
+            ClientEntity entity;
+            try
+            {
+                entity = this.entities[entityID];
+            } catch (KeyNotFoundException)
+            {
+                Logger.Warn("EntityManager", "Entity {0} Sync Entity Info Failed: Entity Not Found", entityID);
+                return;
+            }
+
+            entity.OnSyncEntityInfo(x, y, z, yaw);
+        }
+
+        internal void OnMapAttrChange(string entityID, ArrayList path, string key, object val)
+        {
+            ClientEntity entity;
+            try
+            {
+                entity = this.entities[entityID];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Warn("EntityManager", "Entity {0} Sync Entity Info Failed: Entity Not Found", entityID);
+                return;
+            }
+
+            entity.OnMapAttrChange(path, key, val);
+        }
+
+        internal void OnMapAttrDel(string entityID, ArrayList path, string key)
+        {
+            ClientEntity entity;
+            try
+            {
+                entity = this.entities[entityID];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Warn("EntityManager", "Entity {0} Sync Entity Info Failed: Entity Not Found", entityID);
+                return;
+            }
+
+            entity.OnMapAttrDel(path, key);
+        }
+
+        internal void OnMapAttrClear(string entityID, ArrayList path)
+        {
+            ClientEntity entity;
+            try
+            {
+                entity = this.entities[entityID];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Warn("EntityManager", "Entity {0} Sync Entity Info Failed: Entity Not Found", entityID);
+                return;
+            }
+
+            entity.OnMapAttrClear(path);
         }
     }
 
