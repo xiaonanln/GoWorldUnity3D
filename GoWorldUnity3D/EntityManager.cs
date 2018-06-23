@@ -18,7 +18,7 @@ namespace GoWorld
         ClientEntity ClientOwner;
         ClientSpace Space;
 
-        internal ClientEntity CreateEntity(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, Hashtable attrs)
+        internal ClientEntity CreateEntity(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, MapAttr attrs)
         {
             if (typeName == SPACE_ENTITY_NAME)
             {
@@ -175,7 +175,7 @@ namespace GoWorld
             entity.OnSyncEntityInfo(x, y, z, yaw);
         }
 
-        internal void OnMapAttrChange(string entityID, ArrayList path, string key, object val)
+        internal void OnMapAttrChange(string entityID, ListAttr path, string key, object val)
         {
             ClientEntity entity;
             try
@@ -191,7 +191,7 @@ namespace GoWorld
             entity.OnMapAttrChange(path, key, val);
         }
 
-        internal void OnMapAttrDel(string entityID, ArrayList path, string key)
+        internal void OnMapAttrDel(string entityID, ListAttr path, string key)
         {
             ClientEntity entity;
             try
@@ -207,7 +207,7 @@ namespace GoWorld
             entity.OnMapAttrDel(path, key);
         }
 
-        internal void OnMapAttrClear(string entityID, ArrayList path)
+        internal void OnMapAttrClear(string entityID, ListAttr path)
         {
             ClientEntity entity;
             try

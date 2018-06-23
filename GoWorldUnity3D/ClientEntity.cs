@@ -24,7 +24,7 @@ namespace GoWorld
             }
         }
         public bool IsClientOwner { get; internal set; }
-        public Hashtable Attrs;
+        public MapAttr Attrs;
 
         public bool IsDestroyed { get; private set; }
         public Vector3 Position { get; internal set; }
@@ -79,7 +79,7 @@ namespace GoWorld
             }
         }
 
-        internal void init(Type entityType, string entityID, bool isClientOwner, float x, float y, float z, float yaw, Hashtable attrs)
+        internal void init(Type entityType, string entityID, bool isClientOwner, float x, float y, float z, float yaw, MapAttr attrs)
         {
             this.entityType = entityType;
             this.ID = entityID;
@@ -137,11 +137,11 @@ namespace GoWorld
             this.Yaw = yaw;
         }
 
-        internal void OnMapAttrChange(ArrayList path, string key, object val)
+        internal void OnMapAttrChange(ListAttr path, string key, object val)
         {
-            Hashtable t = this.getAttrByPath(path) as Hashtable;
-            t[key] = val;
-            string rootkey = path != null && path.Count > 0 ? (string)path[0] : key;
+            MapAttr t = this.getAttrByPath(path) as MapAttr;
+            t.Put(key, val);
+            string rootkey = path != null && path.Count > 0 ? (string)path.get(0) : key;
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
             {
@@ -149,14 +149,14 @@ namespace GoWorld
             }
         }
 
-        internal void OnMapAttrDel(ArrayList path, string key)
+        internal void OnMapAttrDel(ListAttr path, string key)
         {
-            Hashtable t = this.getAttrByPath(path) as Hashtable;
+            MapAttr t = this.getAttrByPath(path) as MapAttr;
             if (t.ContainsKey(key))
             {
                 t.Remove(key);
             }
-            string rootkey = path != null && path.Count > 0 ? (string)path[0] : key;
+            string rootkey = path != null && path.Count > 0 ? (string)path.get(0) : key;
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
             {
@@ -164,12 +164,12 @@ namespace GoWorld
             }
         }
 
-        internal void OnMapAttrClear(ArrayList path)
+        internal void OnMapAttrClear(ListAttr path)
         {
             Debug.Assert(path != null && path.Count > 0);
-            Hashtable t = this.getAttrByPath(path) as Hashtable;
+            MapAttr t = this.getAttrByPath(path) as MapAttr;
             t.Clear();
-            string rootkey = (string)path[0];
+            string rootkey = (string)path.get(0);
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
             {
@@ -177,11 +177,11 @@ namespace GoWorld
             }
         }
         
-        internal void OnListAttrAppend(ArrayList path, object val)
+        internal void OnListAttrAppend(ListAttr path, object val)
         {
-            ArrayList l = getAttrByPath(path) as ArrayList;
-            l.Add(val);
-            string rootkey = (string)path[0];
+            ListAttr l = getAttrByPath(path) as ListAttr;
+            l.Append(val);
+            string rootkey = (string)path.get(0);
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
             {
@@ -189,11 +189,11 @@ namespace GoWorld
             }
         }
 
-        internal void OnListAttrPop(ArrayList path)
+        internal void OnListAttrPop(ListAttr path)
         {
-            ArrayList l = getAttrByPath(path) as ArrayList;
-            l.RemoveAt(l.Count - 1);
-            string rootkey = (string)path[0];
+            ListAttr l = getAttrByPath(path) as ListAttr;
+            l.Pop(l.Count - 1);
+            string rootkey = (string)path.get(0);
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
             {
@@ -201,11 +201,11 @@ namespace GoWorld
             }
         }
 
-        internal void OnListAttrChange(ArrayList path, int index, object val)
+        internal void OnListAttrChange(ListAttr path, int index, object val)
         {
-            ArrayList l = getAttrByPath(path) as ArrayList;
-            l[index] = val;
-            string rootkey = (string)path[0];
+            ListAttr l = getAttrByPath(path) as ListAttr;
+            l.Set(index, val);
+            string rootkey = (string)path.get(0);
             System.Reflection.MethodInfo callback = this.GetType().GetMethod("OnAttrChange_" + rootkey);
             if (callback != null)
             {
@@ -213,7 +213,7 @@ namespace GoWorld
             }
         }
 
-        internal object getAttrByPath(ArrayList path)
+        internal object getAttrByPath(ListAttr path)
         {
             object attr = this.Attrs;
 
@@ -226,11 +226,11 @@ namespace GoWorld
             {
                 if (key.GetType() == typeof(string))
                 {
-                    attr = (attr as Hashtable)[(string)key];
+                    attr = (attr as MapAttr).get((string)key);
                 }
                 else
                 {
-                    attr = (attr as ArrayList)[(int)key];
+                    attr = (attr as ListAttr).get((int)key);
                 }
             }
 

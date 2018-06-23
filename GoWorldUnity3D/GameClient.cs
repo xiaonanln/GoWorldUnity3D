@@ -16,7 +16,7 @@ namespace GoWorld
         private DateTime startConnectTime = DateTime.MinValue;
         private PacketReceiver packetReceiver;
 
-        internal delegate void OnCreateEntityOnClientHandler(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, Hashtable attrs);
+        internal delegate void OnCreateEntityOnClientHandler(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, MapAttr attrs);
         internal delegate void OnCallEntityMethodOnClientHandler(string entityID, string method, object[] args);
         internal OnCreateEntityOnClientHandler OnCreateEntityOnClient;
         internal OnCallEntityMethodOnClientHandler OnCallEntityMethodOnClient;
@@ -158,14 +158,14 @@ namespace GoWorld
         private void handleNotifyMapAttrClearOnClient(Packet pkt)
         {
             string entityID = pkt.ReadEntityID();
-            ArrayList path = pkt.ReadData() as ArrayList;
+            ListAttr path = pkt.ReadData() as ListAttr;
             EntityManager.Instance.OnMapAttrClear(entityID, path);
         }
 
         private void handleNotifyMapAttrDelOnClient(Packet pkt)
         {
             string entityID = pkt.ReadEntityID();
-            ArrayList path = pkt.ReadData() as ArrayList;
+            ListAttr path = pkt.ReadData() as ListAttr;
             string key = pkt.ReadVarStr();
             EntityManager.Instance.OnMapAttrDel(entityID, path, key);
         }
@@ -173,7 +173,7 @@ namespace GoWorld
         private void handleNotifyMapAttrChangeOnClient(Packet pkt)
         {
             string entityID = pkt.ReadEntityID();
-            ArrayList path = pkt.ReadData() as ArrayList;
+            ListAttr path = pkt.ReadData() as ListAttr;
             string key = pkt.ReadVarStr();
             object val = pkt.ReadData();
             EntityManager.Instance.OnMapAttrChange(entityID, path, key, val);
@@ -208,7 +208,7 @@ namespace GoWorld
             float y = pkt.ReadFloat32();
             float z = pkt.ReadFloat32();
             float yaw = pkt.ReadFloat32();
-            Hashtable attrs = pkt.ReadData() as Hashtable;
+            MapAttr attrs = pkt.ReadData() as MapAttr;
             // this.debug ("Handle Create Entity On Client: IsClientOwner = {0}, EntityID = {1}, TypeName = {2}, Position = {3},{4},{5}, Yaw = {6}, Attrs = {7}", isClientOwner, entityID, typeName, x,y,z, yaw, attrs);
             if (OnCreateEntityOnClient != null )
             {

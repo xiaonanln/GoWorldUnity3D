@@ -52,7 +52,9 @@
     <Compile Include="EntityManager.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GoWorld.cs" />
+    <Compile Include="ListAttr.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MapAttr.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

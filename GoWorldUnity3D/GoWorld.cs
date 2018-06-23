@@ -33,7 +33,7 @@ namespace GoWorld
             GameClient.Connect(host, port);
         }
 
-        private static void OnCreateEntityOnClient(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, Hashtable attrs)
+        private static void OnCreateEntityOnClient(string typeName, string entityID, bool isClientOwner, float x, float y, float z, float yaw, MapAttr attrs)
         {
             debug("OnCreateEntityOnClient {0}<{1}>, IsClientOwner={2}, Attrs={3} ...", typeName, entityID, isClientOwner, attrs);
             ClientEntity e = EntityManager.CreateEntity(typeName, entityID, isClientOwner, x, y, z, yaw, attrs);

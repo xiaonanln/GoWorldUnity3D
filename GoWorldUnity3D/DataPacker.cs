@@ -28,9 +28,9 @@ namespace GoWorld
         static MsgPack.MessagePackObject convertToMsgPackObject(object v)
         {
             Type t = v.GetType();
-            if (t.Equals(typeof(Hashtable)))
+            if (t.Equals(typeof(MapAttr)))
             {
-                Hashtable ht = v as Hashtable;
+                MapAttr ht = v as MapAttr;
                 IDictionaryEnumerator e = ht.GetEnumerator();
                 MsgPack.MessagePackObjectDictionary d = new MsgPack.MessagePackObjectDictionary();
                 while (e.MoveNext())
@@ -39,9 +39,9 @@ namespace GoWorld
                 }
                 return new MsgPack.MessagePackObject(d);
             }
-            else if (t.Equals(typeof(ArrayList)))
+            else if (t.Equals(typeof(ListAttr)))
             {
-                ArrayList al = v as ArrayList;
+                ListAttr al = v as ListAttr;
                 IEnumerator e = al.GetEnumerator();
                 System.Collections.Generic.IList<MsgPack.MessagePackObject> l = new System.Collections.Generic.List<MsgPack.MessagePackObject>();
                 while (e.MoveNext())
@@ -75,32 +75,49 @@ namespace GoWorld
             {
                 return convertFromMsgPackObjectList(mpobj.AsList());
             }
-            return mpobj.ToObject();
+
+            object obj = mpobj.ToObject();
+            if (typeof(int).IsInstanceOfType(obj))
+            {
+                return (Int64)(int)obj;
+            }
+            ValidateDataType(obj);
+            return obj;
         }
 
-        static Hashtable convertFromMsgPackObjectDictionary(MsgPack.MessagePackObjectDictionary mpobj)
+        static MapAttr convertFromMsgPackObjectDictionary(MsgPack.MessagePackObjectDictionary mpobj)
         {
-            Hashtable ht = new Hashtable();
+            MapAttr t = new MapAttr();
             MsgPack.MessagePackObjectDictionary.Enumerator e = mpobj.GetEnumerator();
             while (e.MoveNext())
             {
                 MsgPack.MessagePackObject key = e.Current.Key;
                 MsgPack.MessagePackObject val = e.Current.Value;
-                ht.Add(key.AsString(), convertFromMsgPackObject(val));
+                t.Put(key.AsString(), convertFromMsgPackObject(val));
             }
-            return ht;
+            return t;
         }
 
-        static ArrayList convertFromMsgPackObjectList(IList<MsgPack.MessagePackObject> mpobj)
+        static ListAttr convertFromMsgPackObjectList(IList<MsgPack.MessagePackObject> mpobj)
         {
-            ArrayList list = new ArrayList(mpobj.Count);
+            ListAttr list = new ListAttr();
             IEnumerator<MsgPack.MessagePackObject> e = mpobj.GetEnumerator();
             while (e.MoveNext())
             {
-                list.Add(convertFromMsgPackObject(e.Current));
+                list.Append(convertFromMsgPackObject(e.Current));
             }
             return list;
         }
 
+        internal static void ValidateDataType(object v)
+        {
+            Debug.Assert(typeof(MapAttr).IsInstanceOfType(v) ||
+                typeof(ListAttr).IsInstanceOfType(v) ||
+                typeof(string).IsInstanceOfType(v) ||
+                typeof(Int64).IsInstanceOfType(v) ||
+                typeof(bool).IsInstanceOfType(v) ||
+                typeof(double).IsInstanceOfType(v) ||
+                v == null);
+        }
     }
 }
