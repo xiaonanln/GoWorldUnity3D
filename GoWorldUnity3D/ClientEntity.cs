@@ -1,15 +1,23 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using UnityEngine;
 
 namespace GoWorld
 {
     public abstract class ClientEntity
     {
-        public object Data { get; set; } // Data for custom use
+        public GameObject GameObject { get {
+                return this.gameObject;
+            } set {
+                if (this.gameObject != value)
+                {
+                    this.gameObject = value;
+                    this.onGameObjectChanged();
+                }
+            }
+        }
+
+        private GameObject gameObject;
         public string ID { get; internal set; }
         public string TypeName { get
             {
@@ -33,6 +41,11 @@ namespace GoWorld
         private void debug(string msg, params object[] args)
         {
             Console.WriteLine(String.Format("DEBUG - "+this+" - " + msg, args));
+        }
+
+        void Test()
+        {
+            UnityEngine.GameObject go;
         }
 
         public override string ToString()
@@ -125,6 +138,11 @@ namespace GoWorld
             }
         }
 
+        private void onGameObjectChanged()
+        {
+            throw new NotImplementedException();
+        }
+
         protected abstract void OnCreated();
         protected abstract void OnBecomeClientOwner();
         protected abstract void OnEnterSpace();
@@ -166,7 +184,7 @@ namespace GoWorld
 
         internal void OnMapAttrClear(ListAttr path)
         {
-            Debug.Assert(path != null && path.Count > 0);
+            System.Diagnostics.Debug.Assert(path != null && path.Count > 0);
             MapAttr t = this.getAttrByPath(path) as MapAttr;
             t.Clear();
             string rootkey = (string)path.get(0);

@@ -19,6 +19,7 @@ namespace TestConsoleApp
 
         protected override void OnDestroy()
         {
+
         }
 
         protected override void OnEnterSpace()
@@ -34,6 +35,16 @@ namespace TestConsoleApp
         public void DisplayAttack(string victimID)
         {
             GoWorld.Logger.Info(this.ToString(), "Attacking Player {0}", victimID);
+        }
+
+        public void OnAttrChange_action()
+        {
+            GoWorld.Logger.Warn(this.ToString(), "Action Changed To: {0}", this.Attrs.GetStr("action"));
+        }
+
+        public void OnAttrChange_hp()
+        {
+            GoWorld.Logger.Warn(this.ToString(), "HP Changed To: {0}", this.Attrs.GetInt("hp"));
         }
     }
 }
