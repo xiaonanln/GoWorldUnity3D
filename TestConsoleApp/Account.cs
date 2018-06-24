@@ -15,12 +15,12 @@ namespace TestConsoleApp
 
         protected override void OnCreated()
         {
-            GoWorldUnity3D.Logger.Info(this.ToString(), "OnCreated ...");
+            GoWorldUnity3D.GoWorldLogger.Info(this.ToString(), "OnCreated ...");
         }
 
         protected override void OnBecomeClientOwner()
         {
-            GoWorldUnity3D.Logger.Info(this.ToString(), "OnBecomeClientOwner ...");
+            GoWorldUnity3D.GoWorldLogger.Info(this.ToString(), "OnBecomeClientOwner ...");
 
             // Account created, logging 
             this.CallServer("Register", USERNAME, PASSWORD);
@@ -28,12 +28,12 @@ namespace TestConsoleApp
 
         protected override void OnDestroy()
         {
-            GoWorldUnity3D.Logger.Info(this.ToString(), "OnDestroy ...");
+            GoWorldUnity3D.GoWorldLogger.Info(this.ToString(), "OnDestroy ...");
         }
 
         public void ShowError(string err)
         {
-            GoWorldUnity3D.Logger.Error("ERROR", err);
+            GoWorldUnity3D.GoWorldLogger.Error("ERROR", err);
 
             if (err.Contains("aready exists"))
             {
@@ -42,7 +42,7 @@ namespace TestConsoleApp
         }
         public void ShowInfo(string info)
         {
-            GoWorldUnity3D.Logger.Info("INFO", info);
+            GoWorldUnity3D.GoWorldLogger.Info("INFO", info);
             if (info.Contains("Registered Successfully"))
             {
                 this.onRegisterSuccessfully();
@@ -65,8 +65,5 @@ namespace TestConsoleApp
             throw new NotImplementedException();
         }
 
-        protected override void Update()
-        {
-        }
     }
 }

@@ -25,7 +25,7 @@ namespace GoWorldUnity3D
                 return (Int64)val;
             } catch(InvalidCastException)
             {
-                Logger.Error("MapAttr", "Can Not Convert From Type {0} To Int64", val.GetType());
+                GoWorldLogger.Error("MapAttr", "Can Not Convert From Type {0} To Int64", val.GetType());
                 return 0;
             }
             

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GoWorldUnity3D
 {
-    public class Logger
+    public class GoWorldLogger
     {
         public static void Debug(string subject, string msg, params object[] args)
         {
@@ -64,6 +64,19 @@ namespace GoWorldUnity3D
             {
                 Console.WriteLine(String.Format("FATAL - " + subject + " - " + msg, args));
             }
+        }
+
+        public static void Assert(bool condition)
+        {
+            try
+            {
+                UnityEngine.Debug.Assert(condition);
+            }
+            catch (System.Security.SecurityException)
+            {
+                System.Diagnostics.Debug.Assert(condition);
+            }
+
         }
 
         public static void Assert(bool condition, string format, params object[] args)

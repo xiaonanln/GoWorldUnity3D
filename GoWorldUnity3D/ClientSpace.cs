@@ -31,8 +31,5 @@ namespace GoWorldUnity3D
             throw new NotImplementedException();
         }
 
-        protected override void Update()
-        {
-        }
     }
 }

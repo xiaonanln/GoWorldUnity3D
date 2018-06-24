@@ -4,49 +4,46 @@ using UnityEngine;
 
 namespace GoWorldUnity3D
 {
-    public abstract class ClientEntity
+    public abstract class ClientEntity : UnityEngine.MonoBehaviour
     {
-        public GameObject gameObject { get {
-                return this._gameObject;
-            } set {
-                if (this._gameObject != value)
-                {
-                    GameObject oldGameObject = this._gameObject;
-                    this._gameObject = value;
-                    this.onGameObjectChanged(oldGameObject);
-                }
-            }
-        }
-
-        private GameObject _gameObject;
         public string ID { get; internal set; }
         public string TypeName { get
             {
-                return this.entityType.Name;
+                return this.GetType().Name;
             }
         }
-        private Type entityType;
 
         public bool IsSpace { get
             {
-                return this.entityType == typeof(ClientSpace);
+                return typeof(ClientSpace).IsInstanceOfType(this);
             }
         }
         public bool IsClientOwner { get; internal set; }
         public MapAttr Attrs;
+        private Vector3 pos;
+        private float yaw;
 
         public bool IsDestroyed { get; private set; }
-        public Vector3 Position { get; internal set; }
-        public float Yaw { get; private set; }
+        public Vector3 Position { get {
+                return this.pos;
+            } internal set {
+                if (this.pos != value)
+                {
+                    this.pos = value;
+                    this.OnUpdatePosition(value);
+                }
+            } }
+
+        public float Yaw { get {
+                return this.yaw;
+            } private set {
+                this.yaw = value;
+                this.OnUpdateYaw(value);
+            } }
 
         private void debug(string msg, params object[] args)
         {
             Console.WriteLine(String.Format("DEBUG - "+this+" - " + msg, args));
-        }
-
-        void Test()
-        {
-            UnityEngine.GameObject go;
         }
 
         public override string ToString()
@@ -74,7 +71,7 @@ namespace GoWorldUnity3D
             }
             catch (Exception e)
             {
-                Logger.Error(this.ToString(), e.ToString());
+                GoWorldLogger.Error(this.ToString(), e.ToString());
             }
 
             this.IsDestroyed = true;
@@ -89,23 +86,17 @@ namespace GoWorldUnity3D
             }
             catch (Exception e)
             {
-                Logger.Error(this.ToString(), e.ToString());
+                GoWorldLogger.Error(this.ToString(), e.ToString());
             }
         }
 
-        internal void init(Type entityType, string entityID, bool isClientOwner, float x, float y, float z, float yaw, MapAttr attrs)
+        internal void init(string entityID, bool isClientOwner, float x, float y, float z, float yaw, MapAttr attrs)
         {
-            this.entityType = entityType;
             this.ID = entityID;
             this.IsClientOwner = isClientOwner;
             this.Position = new Vector3(x, y, z);
             this.Yaw = yaw;
             this.Attrs = attrs;
-        }
-
-        internal void update()
-        {
-            this.Update();
         }
 
         internal void leaveSpace()
@@ -116,7 +107,7 @@ namespace GoWorldUnity3D
             }
             catch (Exception e)
             {
-                Logger.Error(this.ToString(), e.ToString());
+                GoWorldLogger.Error(this.ToString(), e.ToString());
             }
         }
 
@@ -128,7 +119,7 @@ namespace GoWorldUnity3D
             }
             catch (Exception e)
             {
-                Logger.Error(this.ToString(), e.ToString());
+                GoWorldLogger.Error(this.ToString(), e.ToString());
             }
         }
 
@@ -140,22 +131,7 @@ namespace GoWorldUnity3D
             }
             catch(Exception e)
             {
-                Logger.Error(this.ToString(), e.ToString());
-            }
-        }
-
-        private void onGameObjectChanged(GameObject oldGameObject)
-        {
-            if (oldGameObject != null)
-            {
-                GoWorldGameObjectHelper helper = oldGameObject.GetComponent<GoWorldGameObjectHelper>();
-                helper.Entity = null;
-            }
-
-            if (this.gameObject != null)
-            {
-                GoWorldGameObjectHelper helper = this.gameObject.AddComponent<GoWorldGameObjectHelper>();
-                helper.Entity = this;
+                GoWorldLogger.Error(this.ToString(), e.ToString());
             }
         }
 
@@ -164,7 +140,17 @@ namespace GoWorldUnity3D
         protected abstract void OnEnterSpace();
         protected abstract void OnLeaveSpace();
         protected abstract void OnDestroy();
-        protected abstract void Update();
+
+        protected void OnUpdatePosition(Vector3 pos)
+        {
+            // Default Implementation for OnUpdatePosition
+            gameObject.transform.position = pos;
+        }
+
+        protected void OnUpdateYaw(float yaw)
+        {
+            gameObject.transform.rotation = Quaternion.Euler(new Vector3(0f, yaw, 0f));
+        }
 
         internal void OnSyncEntityInfo(float x, float y, float z, float yaw)
         {
@@ -269,7 +255,7 @@ namespace GoWorldUnity3D
                 }
             }
 
-            Logger.Debug(this.ToString(), "Get Attr By Path: {0} = {1}", path.ToString(), attr);
+            GoWorldLogger.Debug(this.ToString(), "Get Attr By Path: {0} = {1}", path.ToString(), attr);
             return attr;
         }
     }

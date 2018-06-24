@@ -49,7 +49,7 @@ namespace GoWorldUnity3D
                 this.recvPayloadLen = BitConverter.ToUInt32(recvPayloadLenBuff, 0);
                 if (this.recvPayloadLen < 2 || this.recvPayloadLen > Proto.MAX_PAYLOAD_LEN)
                 {
-                    Logger.Error("PacketReceiver", "Invalid Packet Payload Length: " + this.recvPayloadLen);
+                    GoWorldLogger.Error("PacketReceiver", "Invalid Packet Payload Length: " + this.recvPayloadLen);
                     this.tcpClient.Close();
                     return null;
                 }

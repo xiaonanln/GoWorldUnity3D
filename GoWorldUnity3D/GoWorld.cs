@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace GoWorldUnity3D
 {
@@ -30,7 +31,8 @@ namespace GoWorldUnity3D
         {
             GameClient.OnCreateEntityOnClient += OnCreateEntityOnClient;
             GameClient.OnCallEntityMethodOnClient += OnCallEntityMethodOnClient;
-            RegisterEntity(typeof(ClientSpace));
+            GameObject clientSpace = new GameObject("ClientSpace", typeof(ClientSpace));
+            RegisterEntity(clientSpace);
         }
 
         public static void Update()
@@ -39,9 +41,9 @@ namespace GoWorldUnity3D
             EntityManager.Update();
         }
 
-        public static void RegisterEntity(Type entityType)
+        public static void RegisterEntity(UnityEngine.GameObject gameObject)
         {
-            EntityManager.RegisterEntity(entityType);
+            EntityManager.RegisterEntity(gameObject);
         }
 
         public static ClientEntity GetEntity(string entityID)

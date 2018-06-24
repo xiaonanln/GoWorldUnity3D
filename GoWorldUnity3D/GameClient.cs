@@ -55,7 +55,7 @@ namespace GoWorldUnity3D
                 this.tcpClient = null;
                 this.packetReceiver = null;
                 this.startConnectTime = DateTime.MinValue;
-                Logger.Warn(this.ToString(), "Disconnected");
+                GoWorldLogger.Warn(this.ToString(), "Disconnected");
             }
         }
 
@@ -72,7 +72,7 @@ namespace GoWorldUnity3D
         {
             if (this.tcpClient == null)
             {
-                Logger.Warn("GameClient", "Game Client Is Not Connected, Send Packet Failed: " + pkt);
+                GoWorldLogger.Warn("GameClient", "Game Client Is Not Connected, Send Packet Failed: " + pkt);
             }
 
             Debug.Assert(pkt.writePos >= sizeof(UInt16));
@@ -221,7 +221,7 @@ namespace GoWorldUnity3D
             string entityID = pkt.ReadEntityID();
             string method = pkt.ReadVarStr();
             object[] args = pkt.ReadArgs();
-            Logger.Debug("GameClient", "Handle Call Entity Method On Client: {0}.{1}({2})", entityID, method, args);
+            GoWorldLogger.Debug("GameClient", "Handle Call Entity Method On Client: {0}.{1}({2})", entityID, method, args);
             if (OnCallEntityMethodOnClient != null)
             {
                 this.OnCallEntityMethodOnClient(entityID, method, args);
@@ -241,7 +241,7 @@ namespace GoWorldUnity3D
             }
 
             // no tcpClient == not connecting, start new connection ...
-            Logger.Info( this.ToString(),"Connecting ...");
+            GoWorldLogger.Info( this.ToString(),"Connecting ...");
             this.tcpClient = new TcpClient(AddressFamily.InterNetwork);
             this.tcpClient.NoDelay = true;
             this.tcpClient.SendTimeout = 5000;
@@ -267,11 +267,11 @@ namespace GoWorldUnity3D
         {
             if (this.tcpClient.Connected)
             {
-                Logger.Info(this.ToString(), "Connected " + this.tcpClient.Connected);
+                GoWorldLogger.Info(this.ToString(), "Connected " + this.tcpClient.Connected);
             }
             else
             {
-                Logger.Warn(this.ToString(), "Connect Failed!");
+                GoWorldLogger.Warn(this.ToString(), "Connect Failed!");
                 this.disconnectTCPClient();
             }
         }
