@@ -107,6 +107,17 @@ namespace GoWorldUnity3D
             }
         }
 
+        internal void syncPositionYawFromClient(string entityID, float x, float y, float z, float yaw)
+        {
+            Packet pkt = new Packet(Proto.MT_SYNC_POSITION_YAW_FROM_CLIENT);
+            pkt.AppendEntityID(entityID);
+            pkt.AppendFloat32(x);
+            pkt.AppendFloat32(y);
+            pkt.AppendFloat32(z);
+            pkt.AppendFloat32(yaw);
+            this.sendPacket(pkt);
+        }
+
         private void tryRecvNextPacket()
         {
             Packet pkt =  this.packetReceiver.RecvPacket();

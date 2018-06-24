@@ -38,6 +38,7 @@ namespace GoWorldUnity3D
             // create new Game Object of specified type 
             GameObject gameObjectPrefab = this.entityGameObjects[typeName];
             GameObject gameObject = GameObject.Instantiate(gameObjectPrefab);
+            GameObject.DontDestroyOnLoad(gameObject);
             ClientEntity e = gameObject.GetComponent<ClientEntity>();
             GoWorldLogger.Assert(e.GetType().Name == typeName);
             e.init(entityID, isClientOwner, x, y, z, yaw, attrs);
@@ -79,7 +80,10 @@ namespace GoWorldUnity3D
 
         internal void Update()
         {
-
+            if (this.ClientOwner != null)
+            {
+                this.ClientOwner.syncPositionYawFromClient();
+            }
         }
 
         internal ClientEntity getEntity(string entityID)

@@ -27,11 +27,8 @@ namespace GoWorldUnity3D
         public Vector3 Position { get {
                 return this.pos;
             } internal set {
-                if (this.pos != value)
-                {
-                    this.pos = value;
-                    this.OnUpdatePosition(value);
-                }
+                this.pos = value;
+                this.OnUpdatePosition(value);
             } }
 
         public float Yaw { get {
@@ -76,6 +73,7 @@ namespace GoWorldUnity3D
 
             this.IsDestroyed = true;
             this.Attrs = null;
+            GameObject.Destroy(gameObject);
         }
 
         internal void onCreated()
@@ -111,6 +109,17 @@ namespace GoWorldUnity3D
             }
         }
 
+        internal void syncPositionYawFromClient()
+        {
+            Vector3 position = gameObject.transform.position;
+            float yaw = gameObject.transform.rotation.eulerAngles.y;
+
+            this.pos = position;
+            this.yaw = yaw;
+
+            GameClient.Instance.syncPositionYawFromClient(this.ID, pos.x, pos.y, pos.z, yaw);
+        }
+
         internal void enterSpace()
         {
             try
@@ -141,13 +150,13 @@ namespace GoWorldUnity3D
         protected abstract void OnLeaveSpace();
         protected abstract void OnDestroy();
 
-        protected void OnUpdatePosition(Vector3 pos)
+        virtual protected void OnUpdatePosition(Vector3 pos)
         {
             // Default Implementation for OnUpdatePosition
             gameObject.transform.position = pos;
         }
 
-        protected void OnUpdateYaw(float yaw)
+        virtual protected void OnUpdateYaw(float yaw)
         {
             gameObject.transform.rotation = Quaternion.Euler(new Vector3(0f, yaw, 0f));
         }

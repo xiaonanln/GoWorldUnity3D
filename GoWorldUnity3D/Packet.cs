@@ -81,6 +81,11 @@ namespace GoWorldUnity3D
             return v;
         }
 
+        internal void AppendFloat32(float v)
+        {
+            this.AppendBytes(BitConverter.GetBytes(v));
+        }
+
         internal byte[] ReadBytes(int len)
         {
             this.assureUnreadPayloadLen(len);
