@@ -7,3 +7,4 @@ Just copy all source code (*.cs) in `GoWorldUnity3D\GoWorldUnity3D` to `Unity3d 
 ## Features not implemented yet
 1. Traffic Compression
 2. Traffic Encryption
+3. KCP
