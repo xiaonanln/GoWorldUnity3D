@@ -37,7 +37,7 @@ namespace GoWorldUnity3D
                 this.yaw = value;
                 this.OnUpdateYaw(value);
             } }
-
+        
         private void debug(string msg, params object[] args)
         {
             Console.WriteLine(String.Format("DEBUG - "+this+" - " + msg, args));
@@ -149,6 +149,20 @@ namespace GoWorldUnity3D
         protected abstract void OnEnterSpace();
         protected abstract void OnLeaveSpace();
         protected abstract void OnDestroy();
+        protected abstract void Tick();
+
+        internal void tick()
+        {
+            try
+            {
+                this.Tick();
+            }
+            catch (Exception e)
+            {
+                GoWorldLogger.Error(this.ToString(), e.ToString());
+            }
+        }
+
         public static GameObject CreateGameObject(MapAttr attrs)
         {
             return null;

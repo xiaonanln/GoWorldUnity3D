@@ -44,7 +44,7 @@ namespace GoWorldUnity3D
             GameObject gameObject = createGameObjectMethod.Invoke(null, new object[1] { attrs }) as GameObject;
             if (gameObject == null)
             {
-                GoWorldLogger.Error("EntityManager", "Fail To Create GameObject For Entity Type {0}: gameObject == null", typeName);
+                GoWorldLogger.Error("EntityManager", "Fail To Create GameObject For Entity Type {0}, Please Define New CreateGameObject Method Like: public static new GameObject CreateGameObject(MapAttr attrs) { ... }", typeName);
                 return null;
             }
 
@@ -60,6 +60,8 @@ namespace GoWorldUnity3D
             GameObject.DontDestroyOnLoad(gameObject);
             e.init(entityID, isClientOwner, x, y, z, yaw, attrs);
             this.entities[entityID] = e;
+            gameObject.transform.position = e.Position;
+            gameObject.transform.rotation = Quaternion.Euler(new Vector3(0f, e.Yaw, 0f));
             e.onCreated();
 
             // new entity created 
@@ -95,11 +97,16 @@ namespace GoWorldUnity3D
             return e; 
         }
 
-        internal void Update()
+        internal void Tick()
         {
             if (this.ClientOwner != null)
             {
                 this.ClientOwner.syncPositionYawFromClient();
+            }
+            // Tick all entities
+            foreach (ClientEntity entity in this.entities.Values)
+            {
+                entity.tick();
             }
         }
 
